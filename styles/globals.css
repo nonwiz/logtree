@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body {
+  @apply font-mono bg-gray-200
+}
+
+h1 {
+  @apply text-2xl;
+}
+
+h2 {
+  @apply text-xl;
+}
+
+button {
+  @apply px-2 py-1 bg-gray-800 border border-gray-500 rounded-lg text-gray-50;
+}
+
+textarea {
+  @apply p-1 bg-gray-200;
+}
+
+details {
+
+}
