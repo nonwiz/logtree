@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   console.log(session.user.email, label);
   const result = await prisma.category.findMany({
     where: {
-      user: { email: { contains: session.user.email } },
+      user: { email: session.user.email },
     },
   });
   res.status(200).json(result);
