@@ -1,17 +1,19 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import { fetcher } from "lib/fetcher";
 
 export default function Timer({ users }) {
   const { data: session } = useSession();
   const handleSubmit = async (event) => {
     event.preventDefault();
     const label = event.target.querySelector("[name=label]").value;
+
     // const newCategory = await prisma.category.create({ });
     console.log("submitted pressed", label);
-    const currentUser = await prisma.user.findUnique({
-      where: { email: session.user.email, name: session.user.name },
-    });
-    console.log(currentUser);
+    fetcher("/api/timer/category/create", { label });
+    // const currentUser = await prisma.user.findUnique({
+    //   where: { email: session.user.email, name: session.user.name },
+    // });
   };
   console.log(session);
   const [isOpen, setOpen] = useState(true);
@@ -66,7 +68,8 @@ export default function Timer({ users }) {
 }
 
 export async function getServerSideProps() {
-  const users = await prisma.user.findMany();
+  // const users = await prisma.user.findMany();
+  const users = {};
   return {
     props: { users },
   };
