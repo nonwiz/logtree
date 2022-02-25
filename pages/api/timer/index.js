@@ -5,6 +5,11 @@ export default async function handler(req, res) {
   const session = await getSession({ req });
   console.log("Create function trigger");
   const { request } = req.body;
+  if (request == "watcher") {
+    const { tid } = req.body;
+    console.log("hey", tid);
+  }
+
   if (request == "create") {
     const { category, description } = req.body;
     const timer = await prisma.timer.create({
@@ -12,6 +17,7 @@ export default async function handler(req, res) {
         status: "start",
         category,
         description,
+        duration: 0,
         user: { connect: { email: session.user.email } },
       },
     });

@@ -6,11 +6,14 @@ import { prisma } from "@/auth";
 
 export default function Timer({ data }) {
   const { data: session } = useSession();
-  const { categories, timers } = JSON.parse(data);
-  console.log("data", categories, timers);
+  const { categories, timers, watchers } = JSON.parse(data);
+  console.log("data", timers, watchers);
   const [deleteStart, setDelete] = useState(false);
   const [deleteList, setDeleteList] = useState([]);
-  const selection = ["Learning", "Working", "Project", "Exercise"];
+
+  const handleUpdateWatcher = async (tid) => {
+    fetcher("/api/timer", { request: "watcher", tid });
+  };
 
   const handleCreateTimer = async (event) => {
     event.preventDefault();
@@ -28,16 +31,12 @@ export default function Timer({ data }) {
   const handleCreateCategory = async (event) => {
     event.preventDefault();
     const label = event.target.querySelector("[name=label]").value;
-
     // const newCategory = await prisma.category.create({ });
-    console.log("submitted pressed", label);
     fetcher("/api/timer/category/create", { label });
     // const currentUser = await prisma.user.findUnique({
     //   where: { email: session.user.email, name: session.user.name },
     // });
   };
-  console.log(session);
-  console.log(deleteList);
   return (
     <div className="flex flex-wrap">
       <div className="w-1/2 border border-r-gray-800 h-[800px]">
@@ -109,12 +108,15 @@ export default function Timer({ data }) {
       <div className="w-1/2 px-2">
         <h2>View List of timer </h2>
 
-        <div className="p-1">
+        <div className="p-1 space-x-1 gap-1">
           {timers.map((item, id) => (
             <details key={id}>
               <summary>{item.description}</summary>
               <button> Pause </button>
-              <button> Stop </button>
+              <button onClick={() => handleUpdateWatcher(item.tid)}>
+                {" "}
+                Stop{" "}
+              </button>
             </details>
           ))}
         </div>
@@ -138,13 +140,19 @@ export const getServerSideProps = async ({ req, res }) => {
     },
   });
 
+  const watchers = await prisma.watcher.findMany({
+    where: {
+      timer: { tid: { in: timers.map((item) => item.tid) } },
+    },
+  });
+
   const categories = await prisma.category.findMany({
     where: {
       user: { email: session.user.email },
     },
   });
 
-  const data = JSON.stringify({ categories, timers });
+  const data = JSON.stringify({ categories, timers, watchers });
 
   return {
     props: {
