@@ -4,7 +4,8 @@
     "paths": {
       "@/components/*": ["components/*"],
       "@/lib/": ["lib/*"],
-      "@/auth": ["pages/api/auth/[...nextauth].js"]
+      "@/auth": ["pages/api/auth/[...nextauth].js"],
+      "@/middleware": ["lib/init-middleware.js"]
     }
   }
 }

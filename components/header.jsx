@@ -8,6 +8,7 @@ function Header(props) {
     { label: "Links", link: "" },
     { label: "Activity", link: "" },
     { label: "URL Master", link: "" },
+    { label: "Hugging Face", link: "huggingface" },
   ];
   return (
     <>
