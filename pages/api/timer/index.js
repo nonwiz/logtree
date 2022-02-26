@@ -3,7 +3,10 @@ import { prisma } from "@/auth";
 
 export default async function handler(req, res) {
   const session = await getSession({ req });
-  console.log("Create function trigger", req.body);
+  if (req.method != "POST") {
+    return res.status(403).json({ message: "Request forbidden" });
+  }
+  console.log("Create function trigger", req.body, req.method);
   const { request } = req.body;
   if (request == "watcher") {
     const { tid } = req.body;
@@ -13,19 +16,34 @@ export default async function handler(req, res) {
         where: { timer: { timerId: tid } },
       });
       const lastWatchers = watchers.pop();
+      let end = new Date();
+      let tmp = (end - new Date(lastWatchers.start)) / 1000;
       const updateWatcher = await prisma.watcher.update({
         where: { wid: lastWatchers.wid },
-        data: { end: new Date() },
+        data: { end },
       });
       const updateTimer = await prisma.timer.update({
         where: { timerId: tid },
         data: {
           status: "stop",
+          duration: Math.floor(timer.duration + tmp),
         },
       });
-      res.status(200).json(JSON.stringify({ updateWatcher, updateTimer }));
+      console.log("Stop watcher, add duration completed");
+      return res.status(200).json(JSON.stringify({ timer: updateTimer }));
+    } else if (timer.status == "stop") {
+      const newWatcher = await prisma.watcher.create({
+        data: { timer: { connect: { timerId: timer.timerId } } },
+      });
+      const updateTimer = await prisma.timer.update({
+        where: { timerId: tid },
+        data: {
+          status: "start",
+        },
+      });
+      console.log("Creating new watcher");
+      return res.status(200).json({ timer: updateTimer });
     }
-    console.log("hey", timer, watchers);
   }
 
   if (request == "create") {
@@ -44,7 +62,7 @@ export default async function handler(req, res) {
         timer: { connect: { timerId: timer.timerId } },
       },
     });
-    res.status(200).json({ timer, watcher });
+    return res.status(200).json({ timer, watcher });
   }
-  res.status(200).json({ message: "creating" });
+  return res.status(200).json({ message: "unknown request" });
 }

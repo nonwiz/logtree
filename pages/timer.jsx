@@ -1,21 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { getSession } from "next-auth/react";
 import { fetcher } from "lib/fetcher";
 import { prisma } from "@/auth";
 
 export default function Timer({ data }) {
-  const { data: session } = useSession();
-  let [categories, timers, watchers] = [[], [], []];
-  try {
-    ({ categories, timers, watchers } = JSON.parse(data));
-  } catch (err) {}
-  console.log("data", timers, watchers);
+  const parsedData = JSON.parse(data);
+  const [timers, setTimers] = useState(parsedData["timers"]);
+  const [categories, setCategories] = useState(parsedData["categories"]);
   const [deleteStart, setDelete] = useState(false);
   const [deleteList, setDeleteList] = useState([]);
+  console.log(categories);
 
   const handleUpdateWatcher = async (tid) => {
-    fetcher("/api/timer", { request: "watcher", tid });
+    console.log("before update", timers);
+    fetcher("/api/timer", { request: "watcher", tid }).then((d) => {
+      setTimers(timers.map((item) => (item.timerId == tid ? d.timer : item)));
+    });
+    console.log("updated watchers", timers);
   };
 
   const handleCreateTimer = async (event) => {
@@ -23,23 +25,29 @@ export default function Timer({ data }) {
     const category = event.target.querySelector("[name=selectCategory]").value;
     const description = event.target.querySelector("[name=description]").value;
     console.log(category, description);
-    fetcher("/api/timer", { request: "create", category, description });
+    fetcher("/api/timer", { request: "create", category, description }).then(
+      (d) => {
+        setTimers([...timers, d.timer]);
+      }
+    );
   };
 
   const handleDelete = async (event) => {
     event.preventDefault();
     fetcher("/api/timer/category/delete", { deleteList });
+    setCategories(
+      categories.filter((item) => !(deleteList.indexOf(item.cid) > -1))
+    );
   };
 
   const handleCreateCategory = async (event) => {
     event.preventDefault();
     const label = event.target.querySelector("[name=label]").value;
-    // const newCategory = await prisma.category.create({ });
-    fetcher("/api/timer/category/create", { label });
-    // const currentUser = await prisma.user.findUnique({
-    //   where: { email: session.user.email, name: session.user.name },
-    // });
+    fetcher("/api/timer/category/create", { label }).then((d) => {
+      setCategories([...categories, d.category]);
+    });
   };
+
   return (
     <div className="flex flex-wrap">
       <div className="w-1/2 border border-r-gray-800 h-[800px]">
@@ -113,12 +121,13 @@ export default function Timer({ data }) {
 
         <div className="p-1 space-x-1 gap-1">
           {timers.map((item, id) => (
-            <details key={id}>
-              <summary>{item.description}</summary>
-              <button> Pause </button>
+            <details key={id} open>
+              <summary>
+                {item.description} | {item.duration} sec{" "}
+                {item.status == "start" ? "| Tracking..." : ""}
+              </summary>
               <button onClick={() => handleUpdateWatcher(item.timerId)}>
-                {" "}
-                Stop{" "}
+                {item.status == "start" ? "Stop" : "Continue"}
               </button>
             </details>
           ))}
