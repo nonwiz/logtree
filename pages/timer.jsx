@@ -6,7 +6,10 @@ import { prisma } from "@/auth";
 
 export default function Timer({ data }) {
   const { data: session } = useSession();
-  const { categories, timers, watchers } = JSON.parse(data);
+  let [categories, timers, watchers] = [[], [], []];
+  try {
+    ({ categories, timers, watchers } = JSON.parse(data));
+  } catch (err) {}
   console.log("data", timers, watchers);
   const [deleteStart, setDelete] = useState(false);
   const [deleteList, setDeleteList] = useState([]);
@@ -130,7 +133,11 @@ export const getServerSideProps = async ({ req, res }) => {
   if (!session) {
     return {
       props: {
-        data: [],
+        data: {
+          timers: [],
+          categories: [],
+          watchers: [],
+        },
       },
     };
   }
@@ -152,7 +159,7 @@ export const getServerSideProps = async ({ req, res }) => {
     },
   });
 
-  const data = JSON.stringify({ categories, timers, watchers });
+  const data = categories && JSON.stringify({ categories, timers, watchers });
 
   return {
     props: {
