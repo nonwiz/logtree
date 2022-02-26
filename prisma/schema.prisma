@@ -57,17 +57,16 @@ model Watcher {
   start   DateTime  @default(now())
   end     DateTime?
   timerId Int
-  timer   Timer     @relation(fields: [timerId], references: [tid], onDelete: Cascade)
+  timer   Timer     @relation(fields: [timerId], references: [timerId], onDelete: Cascade)
 }
 
 model Timer {
-  tid         Int       @id @default(autoincrement())
+  timerId         Int       @id @default(autoincrement())
   description String?
   startDate   DateTime  @default(now())
-  endDate     DateTime?
-  status      String?
   duration    Int?
   userId      String
+  status    String? @default("start")
   category    String?
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   watchers    Watcher[]

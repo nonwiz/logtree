@@ -116,7 +116,7 @@ export default function Timer({ data }) {
             <details key={id}>
               <summary>{item.description}</summary>
               <button> Pause </button>
-              <button onClick={() => handleUpdateWatcher(item.tid)}>
+              <button onClick={() => handleUpdateWatcher(item.timerId)}>
                 {" "}
                 Stop{" "}
               </button>
@@ -149,7 +149,7 @@ export const getServerSideProps = async ({ req, res }) => {
 
   const watchers = await prisma.watcher.findMany({
     where: {
-      timer: { tid: { in: timers.map((item) => item.tid) } },
+      timer: { timerId: { in: timers.map((item) => item.tid) } },
     },
   });
 

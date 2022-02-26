@@ -3,14 +3,14 @@ import { prisma } from "@/auth";
 
 export default async function handler(req, res) {
   const session = await getSession({ req });
-  console.log("Create function trigger");
+  console.log("Create function trigger", req.body);
   const { request } = req.body;
   if (request == "watcher") {
     const { tid } = req.body;
-    const timer = await prisma.timer.findUnique({ where: { tid } });
+    const timer = await prisma.timer.findUnique({ where: { timerId: tid } });
     if (timer.status == "start") {
       const watchers = await prisma.watcher.findMany({
-        where: { timer: { tid } },
+        where: { timer: { timerId: tid } },
       });
       const lastWatchers = watchers.pop();
       const updateWatcher = await prisma.watcher.update({
@@ -18,7 +18,7 @@ export default async function handler(req, res) {
         data: { end: new Date() },
       });
       const updateTimer = await prisma.timer.update({
-        where: { tid },
+        where: { timerId: tid },
         data: {
           status: "stop",
         },
@@ -41,7 +41,7 @@ export default async function handler(req, res) {
     });
     const watcher = await prisma.watcher.create({
       data: {
-        timer: { connect: { tid: timer.tid } },
+        timer: { connect: { timerId: timer.timerId } },
       },
     });
     res.status(200).json({ timer, watcher });
