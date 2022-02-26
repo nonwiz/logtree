@@ -3,7 +3,7 @@ import { prisma } from "@/auth";
 
 export default async function handler(req, res) {
   const session = await getSession({ req });
-  if (req.method != "POST") {
+  if (req.method != "POST" || !session.user.email) {
     return res.status(403).json({ message: "Request forbidden" });
   }
   console.log("Create function trigger", req.body, req.method);
@@ -18,7 +18,7 @@ export default async function handler(req, res) {
       const lastWatchers = watchers.pop();
       let end = new Date();
       let tmp = (end - new Date(lastWatchers.start)) / 1000;
-      const updateWatcher = await prisma.watcher.update({
+      await prisma.watcher.update({
         where: { wid: lastWatchers.wid },
         data: { end },
       });
@@ -32,7 +32,7 @@ export default async function handler(req, res) {
       console.log("Stop watcher, add duration completed");
       return res.status(200).json(JSON.stringify({ timer: updateTimer }));
     } else if (timer.status == "stop") {
-      const newWatcher = await prisma.watcher.create({
+      await prisma.watcher.create({
         data: { timer: { connect: { timerId: timer.timerId } } },
       });
       const updateTimer = await prisma.timer.update({
@@ -41,9 +41,14 @@ export default async function handler(req, res) {
           status: "start",
         },
       });
-      console.log("Creating new watcher");
       return res.status(200).json({ timer: updateTimer });
     }
+  }
+
+  if (request == "delete") {
+    const { timerId } = req.body;
+    await prisma.timer.delete({ where: { timerId } });
+    return res.status(200).json({ message: "delete successfully" });
   }
 
   if (request == "create") {

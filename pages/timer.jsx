@@ -32,7 +32,12 @@ export default function Timer({ data }) {
     );
   };
 
-  const handleDelete = async (event) => {
+  const handleDeleteTimer = async (timerId) => {
+    fetcher("/api/timer", { timerId, request: "delete" });
+    setTimers(timers.filter((item) => item.timerId !== timerId));
+  };
+
+  const handleDeleteCategories = async (event) => {
     event.preventDefault();
     fetcher("/api/timer/category/delete", { deleteList });
     setCategories(
@@ -80,7 +85,9 @@ export default function Timer({ data }) {
           <summary>Manage Topic</summary>
           <div className="p-1 border border-gray-600 rounded-md pt-4 m-1">
             <div className="m-1 space-x-1">
-              {deleteStart && <button onClick={handleDelete}> Apply </button>}
+              {deleteStart && (
+                <button onClick={handleDeleteCategories}> Apply </button>
+              )}
               {deleteStart && (
                 <button
                   onClick={() => {
@@ -106,8 +113,7 @@ export default function Timer({ data }) {
                     setDelete(true);
                   }}
                 >
-                  {" "}
-                  x{" "}
+                  x
                 </a>
               </span>
             ))}
@@ -129,21 +135,36 @@ export default function Timer({ data }) {
         </details>
       </div>
       <div className="w-1/2 px-2">
-        <h2>View List of timer </h2>
+        <h2>View List of Tracker </h2>
 
         <div className="p-1 space-x-1 gap-1">
           {timers.map((item, id) => (
             <details key={id} open>
               <summary>
-                {item.description} |{" "}
+                {item.description}
+                <a
+                  className="text-gray-500 px-2 hover:text-rose-400 hover:cursor-pointer"
+                  onClick={() => {
+                    confirm("Are you sure you want to delete this?") &&
+                      handleDeleteTimer(item.timerId);
+                  }}
+                >
+                  x
+                </a>
+              </summary>
+              <div>
+                <span className="pr-1">⤷</span>
                 {item.duration > 60
                   ? `${Math.floor(item.duration / 60)} min`
                   : `${item.duration} sec`}
                 {item.status == "start" ? " | Tracking..." : ""}
-              </summary>
-              <button onClick={() => handleUpdateWatcher(item.timerId)}>
-                {item.status == "start" ? "Stop" : "Continue"}
-              </button>
+                <a
+                  className="w-6 h-6 rounded-full text-center p-1 mx-2 cursor-pointer"
+                  onClick={() => handleUpdateWatcher(item.timerId)}
+                >
+                  {item.status == "start" ? "⏸" : "▶"}
+                </a>
+              </div>
             </details>
           ))}
         </div>
