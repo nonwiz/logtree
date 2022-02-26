@@ -82,6 +82,16 @@ model User {
   sessions      Session[]
   categories    Category[]
   timers        Timer[]
+  links Link[]
+}
+
+model Link {
+  lid Int @id @default(autoincrement())
+  label String
+  refer String
+  category  String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  String
 }
 
 model VerificationToken {

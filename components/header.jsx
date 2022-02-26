@@ -5,7 +5,7 @@ function Header(props) {
   console.log(session);
   const links = [
     { label: "Timer", link: "/timer" },
-    { label: "Links", link: "" },
+    { label: "Links", link: "/linker" },
     { label: "Activity", link: "" },
     { label: "URL Master", link: "" },
     { label: "Hugging Face", link: "huggingface" },
