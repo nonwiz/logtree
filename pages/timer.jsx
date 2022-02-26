@@ -52,7 +52,7 @@ export default function Timer({ data }) {
     <div className="flex flex-wrap">
       <div className="w-1/2 border border-r-gray-800 h-[800px]">
         <div className="border border-gray-800 m-1 p-2 rounded-md">
-          <h1>Create new timer </h1>
+          <h1>Create Tracker </h1>
           <form className="flex flex-col gap-2" onSubmit={handleCreateTimer}>
             <select name="selectCategory">
               <option value="Uncategory"> Choose one </option>
@@ -77,11 +77,20 @@ export default function Timer({ data }) {
           <div className="mt-1 flex flex-row justify-between"></div>
         </div>
         <details open>
-          <summary>Manage Category</summary>
+          <summary>Manage Topic</summary>
           <div className="p-1 border border-gray-600 rounded-md pt-4 m-1">
             <div className="m-1 space-x-1">
-              <button> Delete Mode </button>
-              <button onClick={handleDelete}> Apply </button>
+              {deleteStart && <button onClick={handleDelete}> Apply </button>}
+              {deleteStart && (
+                <button
+                  onClick={() => {
+                    setDeleteList([]);
+                    setDelete(false);
+                  }}
+                >
+                  Cancel
+                </button>
+              )}
             </div>
             <hr />
             {categories.map((item, id) => (
@@ -92,7 +101,10 @@ export default function Timer({ data }) {
                 {item.label}{" "}
                 <a
                   className="text-gray-500 hover:text-rose-400 hover:cursor-pointer"
-                  onClick={() => setDeleteList([...deleteList, item.cid])}
+                  onClick={() => {
+                    setDeleteList([...deleteList, item.cid]);
+                    setDelete(true);
+                  }}
                 >
                   {" "}
                   x{" "}
@@ -107,7 +119,7 @@ export default function Timer({ data }) {
                 <input
                   type="text"
                   name="label"
-                  placeholder="Category"
+                  placeholder="Topic"
                   className="bg-gray-200 w-3/4 border border-gray-600 rounded-md p-1 mr-1"
                 />
                 <button className="w-1/4">Add</button>
@@ -123,8 +135,11 @@ export default function Timer({ data }) {
           {timers.map((item, id) => (
             <details key={id} open>
               <summary>
-                {item.description} | {item.duration} sec{" "}
-                {item.status == "start" ? "| Tracking..." : ""}
+                {item.description} |{" "}
+                {item.duration > 60
+                  ? `${Math.floor(item.duration / 60)} min`
+                  : `${item.duration} sec`}
+                {item.status == "start" ? " | Tracking..." : ""}
               </summary>
               <button onClick={() => handleUpdateWatcher(item.timerId)}>
                 {item.status == "start" ? "Stop" : "Continue"}
