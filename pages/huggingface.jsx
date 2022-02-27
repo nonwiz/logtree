@@ -18,7 +18,7 @@ export default function Timer({ data }) {
     const data = event.target.querySelector("[name=sampleText]").value;
     const query = fetcher("/api/huggingface/", { data, url: option[url] });
     query.then(
-      (r) => (console.log(r), setOutput({ type: "text", data: "test" }))
+      (r) => (console.log(r), setOutput({ type: "text", data: JSON.stringify(r) }))
     );
   };
   return (
