@@ -15,6 +15,5 @@ Like any other time tracker app, this include the duration of the activity that 
 - Instead of drop down, how about select on a listed label and highlight it?
 
 # Framework
-
 Built with Nextjs + NextAuth + PlanetScale + Prisma + TailwindCSS
 
