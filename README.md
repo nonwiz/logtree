@@ -17,3 +17,6 @@ Like any other time tracker app, this include the duration of the activity that 
 # Framework
 Built with Nextjs + NextAuth + PlanetScale + Prisma + TailwindCSS
 
+# Huggingface
+This is just some bonus for fun.
+
