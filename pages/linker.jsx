@@ -102,6 +102,7 @@ export default function Linker({ data }) {
                         href={link.refer}
                         className="text-sky-700 hover:underline"
                         target="_blank"
+                        rel="noreferrer"
                       >
                         {" "}
                         {link.label}{" "}

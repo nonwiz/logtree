@@ -100,6 +100,7 @@ export default function Timer({ data }) {
               )}
             </div>
             <hr />
+            {!categories && "Try create some topic!"}
             {categories.map((item, id) => (
               <span
                 key={id}

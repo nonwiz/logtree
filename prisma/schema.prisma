@@ -8,6 +8,7 @@ datasource db {
   url                  = env("DATABASE_URL")
   referentialIntegrity = "prisma"
   shadowDatabaseUrl   = env("SHADOW_DATABASE_URL")
+  planetScaleMode = true
 }
 
 model Inquiry {

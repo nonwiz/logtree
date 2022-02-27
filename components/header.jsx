@@ -1,4 +1,5 @@
 import { useSession, signOut } from "next-auth/react";
+import Link from "next/link"
 
 function Header(props) {
   const { data: session } = useSession();
@@ -6,29 +7,31 @@ function Header(props) {
   const links = [
     { label: "Timer", link: "/timer" },
     { label: "Links", link: "/linker" },
-    { label: "Activity", link: "" },
-    { label: "URL Master", link: "" },
+    { label: "Activity", link: "/" },
+    { label: "URL Master", link: "/" },
     { label: "Hugging Face", link: "huggingface" },
   ];
+  console.log(links);
   return (
     <>
       <div className="p-2 flex flex-wrap justify-between border border-b-gray-300">
         <div>
           {" "}
           <span className="bg-gray-800 text-gray-100 p-1 rounded-md">
-            <a href="/">LOGTREE</a>
+            <Link href="/">LOGTREE</Link>
           </span>
           <span>:-</span>
           <span className="space-x-2">
             {links.map((item, id) => (
-              <a
+              <Link
                 href={item.link}
                 className="hover:underline active:underline decoration-dashed"
                 key={id}
               >
-                {" "}
-                {item.label}{" "}
-              </a>
+                <a>
+                {item.label}
+                </a>
+              </Link>
             ))}
           </span>
         </div>
@@ -42,7 +45,7 @@ function Header(props) {
           )}
 
           {!session ? (
-            <a href="/api/auth/signin"> Sign in </a>
+            <Link href="/api/auth/signin"> Sign in </Link>
           ) : (
             <button onClick={() => signOut()}>Sign out </button>
           )}
