@@ -8,6 +8,7 @@ export default function Linker({ data }) {
   const parsedData = JSON.parse(data);
   const { categories } = parsedData;
   const [links, setLinks] = useState(parsedData["links"]);
+  const [toast, setToast] = useState({ open: false, text: "" });
   console.log(links);
 
   const handleCreateLink = async (event) => {
@@ -34,6 +35,10 @@ export default function Linker({ data }) {
   const handleDeleteLink = async (lid) => {
     fetcher("/api/linker", { lid, request: "delete" });
     setLinks(links.filter((item) => item.lid !== lid));
+  };
+
+  const showToast = (text) => {
+    setToast({ open: true, text });
   };
 
   return (
@@ -80,53 +85,41 @@ export default function Linker({ data }) {
             className="p-1 m-1 rounded-md border border-gray-600"
           >
             <h3>{item.label}</h3>
-            {links.map(
-              (link) =>
-                link.category == item.label && (
-                  <li className="list-none" key={link.lid}>
-                    <a
-                      href={link.refer}
-                      className="text-sky-700 hover:underline"
-                      target="_blank"
-                    >
-                      {" "}
-                      {link.label}{" "}
-                    </a>
-                    <a
-                      className="text-gray-500 hover:text-rose-400 hover:cursor-pointer"
-                      onClick={() => {
-                        handleDeleteLink(link.lid);
-                      }}
-                    >
-                      x
-                    </a>
-                  </li>
-                )
-            )}
+            <ul className="p-1 list-none">
+              {links.map(
+                (link) =>
+                  link.category == item.label && (
+                    <li key={link.lid}>
+                      <a
+                        className="cursor-pointer hover:underline"
+                        onClick={() => {
+                          navigator.clipboard.writeText(link.refer);
+                        }}
+                      >
+                        📋
+                      </a>
+                      <a
+                        href={link.refer}
+                        className="text-sky-700 hover:underline"
+                        target="_blank"
+                      >
+                        {" "}
+                        {link.label}{" "}
+                      </a>
+                      <a
+                        className="text-gray-500 hover:text-rose-400 hover:cursor-pointer"
+                        onClick={() => {
+                          handleDeleteLink(link.lid);
+                        }}
+                      >
+                        x
+                      </a>
+                    </li>
+                  )
+              )}
+            </ul>
           </div>
         ))}
-        <ul>
-          {links.map((item) => (
-            <li className="list-none" key={item.lid}>
-              <a
-                href={item.refer}
-                className="text-sky-700 hover:underline"
-                target="_blank"
-              >
-                {" "}
-                {item.label}{" "}
-              </a>
-              <a
-                className="text-gray-500 hover:text-rose-400 hover:cursor-pointer"
-                onClick={() => {
-                  handleDeleteLink(item.lid);
-                }}
-              >
-                x
-              </a>
-            </li>
-          ))}
-        </ul>
       </div>
     </div>
   );
