@@ -3,9 +3,9 @@ import { prisma } from "@/auth";
 
 export default async function handler(req, res) {
   const session = await getSession({ req });
-  console.log("list function trigger");
-  const { label } = req.body;
-  console.log(session.user.email, label);
+  if (!session.user.email) {
+    return res.status(403).json({ message: "Request forbidden" });
+  }
   const result = await prisma.category.findMany({
     where: {
       user: { email: session.user.email },

@@ -7,8 +7,34 @@ import { prisma } from "@/auth";
 export default function Linker({ data }) {
   const parsedData = JSON.parse(data);
   const { categories } = parsedData;
-  const [deleteStart, setDelete] = useState(false);
-  const [deleteList, setDeleteList] = useState([]);
+  const [links, setLinks] = useState(parsedData["links"]);
+  console.log(links);
+
+  const handleCreateLink = async (event) => {
+    event.preventDefault();
+    const category = event.target.querySelector("[name=category]").value;
+    const refer = event.target.querySelector("[name=refer]").value;
+    let label = event.target.querySelector("[name=label]").value;
+    if (label.length < 1) {
+      const splitRefer = refer.split(".")[0];
+      label = splitRefer.substr(
+        splitRefer.indexOf("http") > -1 ? "https://".length : 0
+      );
+    }
+    const query = fetcher("/api/linker", {
+      request: "create",
+      category,
+      refer,
+      label,
+    }).then((d) => {
+      setLinks([...links, d.link]);
+    });
+  };
+
+  const handleDeleteLink = async (lid) => {
+    fetcher("/api/linker", { lid, request: "delete" });
+    setLinks(links.filter((item) => item.lid !== lid));
+  };
 
   return (
     <div className="flex flex-wrap">
@@ -16,8 +42,11 @@ export default function Linker({ data }) {
         <details open>
           <summary>Manage Topic</summary>
           <div className="p-1 border border-gray-600 rounded-md pt-4 m-1">
-            <form className="flex py-2 px-1 flex-col">
-              <select name="selectCategory">
+            <form
+              className="flex py-2 px-1 flex-col"
+              onSubmit={handleCreateLink}
+            >
+              <select name="category">
                 <option value="Uncategory"> Choose one </option>
                 {categories.map((item, id) => (
                   <option key={id} value={item.label}>
@@ -45,6 +74,59 @@ export default function Linker({ data }) {
       </div>
       <div className="w-1/2 px-2">
         <h2>View List of Link </h2>
+        {categories.map((item) => (
+          <div
+            key={item.cid}
+            className="p-1 m-1 rounded-md border border-gray-600"
+          >
+            <h3>{item.label}</h3>
+            {links.map(
+              (link) =>
+                link.category == item.label && (
+                  <li className="list-none" key={link.lid}>
+                    <a
+                      href={link.refer}
+                      className="text-sky-700 hover:underline"
+                      target="_blank"
+                    >
+                      {" "}
+                      {link.label}{" "}
+                    </a>
+                    <a
+                      className="text-gray-500 hover:text-rose-400 hover:cursor-pointer"
+                      onClick={() => {
+                        handleDeleteLink(link.lid);
+                      }}
+                    >
+                      x
+                    </a>
+                  </li>
+                )
+            )}
+          </div>
+        ))}
+        <ul>
+          {links.map((item) => (
+            <li className="list-none" key={item.lid}>
+              <a
+                href={item.refer}
+                className="text-sky-700 hover:underline"
+                target="_blank"
+              >
+                {" "}
+                {item.label}{" "}
+              </a>
+              <a
+                className="text-gray-500 hover:text-rose-400 hover:cursor-pointer"
+                onClick={() => {
+                  handleDeleteLink(item.lid);
+                }}
+              >
+                x
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
@@ -70,7 +152,13 @@ export const getServerSideProps = async ({ req, res }) => {
     },
   });
 
-  const data = categories && JSON.stringify({ categories });
+  const links = await prisma.link.findMany({
+    where: {
+      user: { email: session.user.email },
+    },
+  });
+
+  const data = categories && JSON.stringify({ categories, links });
 
   return {
     props: {
