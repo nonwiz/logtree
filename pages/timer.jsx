@@ -6,6 +6,7 @@ import { prisma } from "@/auth";
 
 export default function Timer({ data }) {
   const parsedData = JSON.parse(data);
+  console.log(parsedData);
   const [timers, setTimers] = useState(parsedData["timers"]);
   const [categories, setCategories] = useState(parsedData["categories"]);
   const [deleteStart, setDelete] = useState(false);
@@ -178,34 +179,26 @@ export const getServerSideProps = async ({ req, res }) => {
   const session = await getSession({ req });
   if (!session) {
     return {
-      props: {
-        data: {
-          timers: [],
-          categories: [],
-          watchers: [],
-        },
+      redirect: {
+        destination: "/",
+        permanent: false,
       },
     };
   }
-  const timers = await prisma.timer.findMany({
+
+  const user = await prisma.user.findUnique({
     where: {
-      user: { email: session.user.email },
+      email: session.user.email,
+    },
+    select: {
+      categories: true,
+      timers: true,
     },
   });
 
-  const watchers = await prisma.watcher.findMany({
-    where: {
-      timer: { timerId: { in: timers.map((item) => item.tid) } },
-    },
-  });
-
-  const categories = await prisma.category.findMany({
-    where: {
-      user: { email: session.user.email },
-    },
-  });
-
-  const data = categories && JSON.stringify({ categories, timers, watchers });
+  const data =
+    user &&
+    JSON.stringify({ categories: user.categories, timers: user.timers });
 
   return {
     props: {

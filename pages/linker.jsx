@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useState } from "react";
 import { getSession } from "next-auth/react";
-import { fetcher } from "lib/fetcher";
+import { fetcher, getFieldsValues } from "lib/fetcher";
 import { prisma } from "@/auth";
 
 export default function Linker({ data }) {
@@ -9,31 +8,24 @@ export default function Linker({ data }) {
   const { categories } = parsedData;
   const [links, setLinks] = useState(parsedData["links"]);
   const [toast, setToast] = useState({ open: false, text: "" });
-  console.log(links);
 
   const handleCreateLink = async (event) => {
     event.preventDefault();
-    const category = event.target.querySelector("[name=category]").value;
-    const refer = event.target.querySelector("[name=refer]").value;
-    let label = event.target.querySelector("[name=label]").value;
-    if (label.length < 1) {
-      const splitRefer = refer.split(".")[0];
-      label = splitRefer.substr(
+    const data = getFieldsValues(event, ["category", "refer", "label"]);
+    console.log(data);
+    if (data["label"].length < 1) {
+      const splitRefer = data.refer.split(".")[0];
+      data["label"] = splitRefer.substr(
         splitRefer.indexOf("http") > -1 ? "https://".length : 0
       );
     }
-    const query = fetcher("/api/linker", {
-      request: "create",
-      category,
-      refer,
-      label,
-    }).then((d) => {
+    fetcher("/api/linker/create", data).then((d) => {
       setLinks([...links, d.link]);
     });
   };
 
   const handleDeleteLink = async (lid) => {
-    fetcher("/api/linker", { lid, request: "delete" });
+    fetcher("/api/linker/delete", { lid });
     setLinks(links.filter((item) => item.lid !== lid));
   };
 
@@ -52,7 +44,6 @@ export default function Linker({ data }) {
               onSubmit={handleCreateLink}
             >
               <select name="category">
-                <option value="Uncategory"> Choose one </option>
                 {categories.map((item, id) => (
                   <option key={id} value={item.label}>
                     {" "}
@@ -130,29 +121,25 @@ export const getServerSideProps = async ({ req, res }) => {
   const session = await getSession({ req });
   if (!session) {
     return {
-      props: {
-        data: {
-          timers: [],
-          categories: [],
-          watchers: [],
-        },
+      redirect: {
+        destination: "/",
+        permanent: false,
       },
     };
   }
 
-  const categories = await prisma.category.findMany({
+  const user = await prisma.user.findUnique({
     where: {
-      user: { email: session.user.email },
+      email: session.user.email,
+    },
+    select: {
+      categories: true,
+      links: true,
     },
   });
 
-  const links = await prisma.link.findMany({
-    where: {
-      user: { email: session.user.email },
-    },
-  });
-
-  const data = categories && JSON.stringify({ categories, links });
+  const data =
+    user && JSON.stringify({ categories: user.categories, links: user.links });
 
   return {
     props: {

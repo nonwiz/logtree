@@ -1,9 +1,8 @@
 import { useSession, signOut } from "next-auth/react";
-import Link from "next/link"
+import Link from "next/link";
 
 function Header(props) {
   const { data: session } = useSession();
-  console.log(session);
   const links = [
     { label: "Timer", link: "/timer" },
     { label: "Links", link: "/linker" },
@@ -11,7 +10,6 @@ function Header(props) {
     { label: "URL Master", link: "/" },
     { label: "Hugging Face", link: "huggingface" },
   ];
-  console.log(links);
   return (
     <>
       <div className="p-2 flex flex-wrap justify-between border border-b-gray-300">
@@ -28,9 +26,7 @@ function Header(props) {
                 className="hover:underline active:underline decoration-dashed"
                 key={id}
               >
-                <a>
-                {item.label}
-                </a>
+                <a>{item.label}</a>
               </Link>
             ))}
           </span>

@@ -1,7 +1,7 @@
 import { fetcher } from "lib/fetcher";
 import { useState } from "react";
 
-export default function Timer({ data }) {
+export default function HuggingFace() {
   const apiURL = "https://api-inference.huggingface.co/models/";
   const option = {
     "Generate Text": `${apiURL}gpt2`,
@@ -18,7 +18,9 @@ export default function Timer({ data }) {
     const data = event.target.querySelector("[name=sampleText]").value;
     const query = fetcher("/api/huggingface/", { data, url: option[url] });
     query.then(
-      (r) => (console.log(r), setOutput({ type: "text", data: JSON.stringify(r) }))
+      (r) => (
+        console.log(r), setOutput({ type: "text", data: JSON.stringify(r) })
+      )
     );
   };
   return (
@@ -58,9 +60,3 @@ export default function Timer({ data }) {
     </div>
   );
 }
-
-export const getServerSideProps = async ({ req, res }) => {
-  return {
-    props: {},
-  };
-};
