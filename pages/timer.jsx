@@ -6,33 +6,28 @@ import { prisma } from "@/auth";
 
 export default function Timer({ data }) {
   const parsedData = JSON.parse(data);
-  console.log(parsedData);
   const [timers, setTimers] = useState(parsedData["timers"]);
   const [categories, setCategories] = useState(parsedData["categories"]);
   const [deleteStart, setDelete] = useState(false);
   const [deleteList, setDeleteList] = useState([]);
-  console.log(categories);
 
-  const handleUpdateWatcher = async (tid) => {
-    console.log("before update", timers);
-    fetcher("/api/timer", { request: "watcher", tid }).then((d) => {
+  const handleUpdateWatcher = async (tid, status) => {
+    fetcher("/api/timer", { tid, status }).then((d) => {
       setTimers(timers.map((item) => (item.timerId == tid ? d.timer : item)));
     });
-    console.log("updated watchers", timers);
   };
 
   const handleCreateTimer = async (event) => {
     event.preventDefault();
     const category = event.target.querySelector("[name=selectCategory]").value;
     const description = event.target.querySelector("[name=description]").value;
-    console.log(category, description);
     fetcher("/api/timer/create", { category, description }).then((d) => {
       setTimers([...timers, d.timer]);
     });
   };
 
   const handleDeleteTimer = async (timerId) => {
-    fetcher("/api/timer", { timerId, request: "delete" });
+    fetcher("/api/timer/delete", { timerId });
     setTimers(timers.filter((item) => item.timerId !== timerId));
   };
 
@@ -160,7 +155,7 @@ export default function Timer({ data }) {
                 {item.status == "start" ? " | Tracking..." : ""}
                 <a
                   className="w-6 h-6 rounded-full text-center p-1 mx-2 cursor-pointer"
-                  onClick={() => handleUpdateWatcher(item.timerId)}
+                  onClick={() => handleUpdateWatcher(item.timerId, item.status)}
                 >
                   {item.status == "start" ? "⏸" : "▶"}
                 </a>
