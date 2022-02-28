@@ -26,11 +26,9 @@ export default function Timer({ data }) {
     const category = event.target.querySelector("[name=selectCategory]").value;
     const description = event.target.querySelector("[name=description]").value;
     console.log(category, description);
-    fetcher("/api/timer", { request: "create", category, description }).then(
-      (d) => {
-        setTimers([...timers, d.timer]);
-      }
-    );
+    fetcher("/api/timer/create", { category, description }).then((d) => {
+      setTimers([...timers, d.timer]);
+    });
   };
 
   const handleDeleteTimer = async (timerId) => {
