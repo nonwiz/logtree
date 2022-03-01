@@ -72,6 +72,7 @@ model Timer {
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   watchers    Watcher[]
   notes Note[]
+  toDos ToDo[]
 }
 
 model User {
@@ -102,6 +103,14 @@ model Note {
   timerId Int
   description String
 
+}
+
+model ToDo {
+  tid Int @id @default(autoincrement())
+  status  Boolean @default(false)
+  description String
+  timer Timer @relation(fields: [timerId], references: [timerId])
+  timerId Int
 }
 
 model VerificationToken {

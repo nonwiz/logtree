@@ -1,7 +1,13 @@
 import Head from "next/head";
 import Image from "next/image";
+import { getSession, useSession } from "next-auth/react";
+import { prisma } from "@/auth";
 
-export default function Home() {
+export default function Home({ data }) {
+  const parsedData = JSON.parse(data);
+
+  console.log(parsedData);
+
   return (
     <div>
       <Head>
@@ -14,3 +20,49 @@ export default function Home() {
     </div>
   );
 }
+
+export const getServerSideProps = async ({ req, res }) => {
+  const session = await getSession({ req });
+  if (!session) {
+    return {
+      props: {
+        data: {
+          login: false,
+        },
+      },
+    };
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email: session.user.email,
+    },
+    select: {
+      categories: {
+        select: {
+          cid: true,
+          label: true,
+        },
+      },
+      timers: {
+        select: {
+          timerId: true,
+          description: true,
+          category: true,
+          status: true,
+          duration: true,
+        },
+      },
+    },
+  });
+
+  const data =
+    user &&
+    JSON.stringify({ categories: user.categories, timers: user.timers });
+
+  return {
+    props: {
+      data,
+    },
+  };
+};
