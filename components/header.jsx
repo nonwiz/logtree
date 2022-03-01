@@ -6,9 +6,10 @@ function Header(props) {
   const links = [
     { label: "Timer", link: "/timer" },
     { label: "Links", link: "/linker" },
-    { label: "Activity", link: "/" },
-    { label: "URL Master", link: "/" },
-    { label: "Hugging Face", link: "huggingface" },
+    { label: "Notes", link: "/noter" },
+    // { label: "Activity", link: "/" },
+    // { label: "URL Master", link: "/" },
+    { label: "HF-AI", link: "/huggingface" },
   ];
   return (
     <>

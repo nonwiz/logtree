@@ -4,6 +4,7 @@ Inspired by avanier, this project include several mini apps inside such as track
 
 # Time tracker: 
 - exporting records / importing records
+- Ability to archive.
 
 Like any other time tracker app, this include the duration of the activity that you track, there is nothing special.
 - Split API routing properly.

@@ -71,6 +71,7 @@ model Timer {
   category    String?
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   watchers    Watcher[]
+  notes Note[]
 }
 
 model User {
@@ -93,6 +94,14 @@ model Link {
   category  String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId  String
+}
+
+model Note {
+  nid Int @id @default(autoincrement())
+  timer Timer @relation(fields: [timerId], references: [timerId])
+  timerId Int
+  description String
+
 }
 
 model VerificationToken {
