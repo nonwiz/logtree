@@ -6,6 +6,7 @@ Inspired by avanier, this project include several mini apps inside such as track
 - exporting records / importing records
 - Ability to archive.
 
+
 Like any other time tracker app, this include the duration of the activity that you track, there is nothing special.
 - Split API routing properly.
 
@@ -18,10 +19,19 @@ Like any other time tracker app, this include the duration of the activity that 
 
 # UI Brainstorming
 - Instead of drop down, how about select on a listed label and highlight it?
+- Category or Topic Create Form available universally?
+- Confirm the deletion of the topic or category?
 
 # Framework
 Built with Nextjs + NextAuth + PlanetScale + Prisma + TailwindCSS
 
 # Huggingface
 This is just some bonus for fun.
+
+
+# Structure
+
+## Home Page:
+- Able to create/delete Category (Topic)
+- See the ongoing tracking, recent notes, recent links
 

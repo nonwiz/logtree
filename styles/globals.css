@@ -16,7 +16,7 @@ h2 {
 }
 
 button {
-  @apply px-2 py-1 bg-gray-800 border border-gray-500 rounded-lg text-gray-50;
+  @apply px-2 py-1 rounded-lg; 
 }
 
 textarea {
@@ -25,4 +25,12 @@ textarea {
 
 details {
 
+}
+
+code {
+  @apply underline decoration-black decoration-dashed decoration-2;
+}
+
+p {
+  @apply p-1 text-gray-800;
 }

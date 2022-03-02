@@ -13,11 +13,9 @@ const cors = initMiddleware(
 export default async function handler(req, res) {
   // Run cors
   await cors(req, res);
-  const { url, data } = req.body;
+  const { url } = req.body;
   const result = await fetch(url, {
     method: "GET",
-    body: JSON.stringify(data),
   }).then((r) => r.json());
-  console.log(result);
   res.status(200).json(result);
 }

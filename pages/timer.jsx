@@ -54,7 +54,6 @@ export default function Timer({ data }) {
           <h1>Create Tracker </h1>
           <form className="flex flex-col gap-2" onSubmit={handleCreateTimer}>
             <select name="selectCategory">
-              <option value="Uncategory"> Choose one </option>
               {categories.map((item, id) => (
                 <option key={id} value={item.label}>
                   {" "}

@@ -1,16 +1,32 @@
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 
-function Header(props) {
+const getLabel = (objArr, link) => {
+  return objArr.filter((item) => item.link == link)[0].label;
+};
+
+function Header() {
+  const { route } = useRouter();
   const { data: session } = useSession();
   const links = [
-    { label: "Timer", link: "/timer" },
+    { label: "Index", link: "/" },
+    { label: "Tracker", link: "/timer" },
     { label: "Links", link: "/linker" },
     { label: "Notes", link: "/noter" },
     // { label: "Activity", link: "/" },
     // { label: "URL Master", link: "/" },
     { label: "HF-AI", link: "/huggingface" },
   ];
+
+  useEffect(() => {
+    // This is for dynamic mapping the document title base on the url and setting the dropdown base on label
+    const label = getLabel(links, route);
+    document.title = `${label} | Logtree`;
+    document.querySelector("[name=url]").value = label;
+  });
+
   return (
     <>
       <div className="p-2 flex flex-wrap justify-between border border-b-gray-300">
@@ -21,15 +37,17 @@ function Header(props) {
           </span>
           <span>:-</span>
           <span className="space-x-2">
-            {links.map((item, id) => (
-              <Link
-                href={item.link}
-                className="hover:underline active:underline decoration-dashed"
-                key={id}
-              >
-                <a>{item.label}</a>
-              </Link>
-            ))}
+            <select name="url">
+              {links.map((item, id) => (
+                <Link
+                  href={item.link}
+                  className="hover:underline active:underline decoration-dashed"
+                  key={id}
+                >
+                  <option>{item.label}</option>
+                </Link>
+              ))}
+            </select>
           </span>
         </div>
         <div className="flex flex-row gap-2">
@@ -44,7 +62,12 @@ function Header(props) {
           {!session ? (
             <Link href="/api/auth/signin"> Sign in </Link>
           ) : (
-            <button onClick={() => signOut()}>Sign out </button>
+            <button
+              onClick={() => signOut()}
+              className="bg-rose-500 text-red-50"
+            >
+              Logout
+            </button>
           )}
         </div>
       </div>
