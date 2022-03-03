@@ -29,7 +29,7 @@ export const Category = (data) => {
         <summary>Manage Topic</summary>
         <div className="px-2 py-4 border border-gray-600 rounded-md m-1">
           <hr />
-          {!categories && "Try create some topic!"}
+          {!categories.length && "Try create some topic!"}
           <div className="flex flex-wrap gap-2 m-1">
             {categories.map((item, id) => (
               <span key={id} className="border border-gray-700 rounded-md p-1">

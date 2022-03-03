@@ -35,3 +35,7 @@ This is just some bonus for fun.
 - Able to create/delete Category (Topic)
 - See the ongoing tracking, recent notes, recent links
 
+
+## Log
+- 02-03-2022: update the dashboard
+- 03-03-2022: rename timer to tracker

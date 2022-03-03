@@ -5,9 +5,10 @@ import { prisma } from "@/auth";
 
 export default function Linker({ data }) {
   const parsedData = JSON.parse(data);
-  const { categories } = parsedData;
-  const [links, setLinks] = useState(parsedData["links"]);
+  const [categories, setCategories] = useState(parsedData["categories"]);
+  const [links, setLinks] = useState(categories.links);
   const [toast, setToast] = useState({ open: false, text: "" });
+  console.log(links, parsedData);
 
   const handleCreateLink = async (event) => {
     event.preventDefault();
@@ -20,13 +21,21 @@ export default function Linker({ data }) {
       );
     }
     fetcher("/api/linker/create", data).then((d) => {
-      setLinks([...links, d.link]);
+      const tmp = [...categories];
+      tmp.filter((item) => item.cid == data.category)[0].links.push(d.link);
+      setCategories(tmp);
     });
   };
 
-  const handleDeleteLink = async (lid) => {
+  const handleDeleteLink = async (lid, cid) => {
     fetcher("/api/linker/delete", { lid });
-    setLinks(links.filter((item) => item.lid !== lid));
+    let currentCategory = categories.filter((item) => item.cid == cid)[0];
+    currentCategory.links = currentCategory.links.filter(
+      (link) => link.lid != lid
+    );
+    setCategories(
+      categories.map((item) => (item.cid == cid ? currentCategory : item))
+    );
   };
 
   const showToast = (text) => {
@@ -45,9 +54,8 @@ export default function Linker({ data }) {
             >
               <select name="category">
                 {categories.map((item, id) => (
-                  <option key={id} value={item.label}>
-                    {" "}
-                    {item.label}{" "}
+                  <option key={id} value={item.cid}>
+                    {item.label}
                   </option>
                 ))}
               </select>
@@ -71,15 +79,12 @@ export default function Linker({ data }) {
       <div className="w-1/2 px-2">
         <h2>View List of Link </h2>
         {categories.map((item) => (
-          <div
-            key={item.cid}
-            className="p-1 m-1 rounded-md border border-gray-600"
-          >
-            <h3>{item.label}</h3>
-            <ul className="p-1 list-none">
-              {links.map(
-                (link) =>
-                  link.category == item.label && (
+          <div key={item.cid}>
+            {item.links.length ? (
+              <div className="p-1 m-1 rounded-md border border-gray-600">
+                <h3>{item.label}</h3>
+                <ul className="p-1 list-none">
+                  {item.links.map((link) => (
                     <li key={link.lid}>
                       <a
                         className="cursor-pointer hover:underline"
@@ -101,15 +106,18 @@ export default function Linker({ data }) {
                       <a
                         className="text-gray-500 hover:text-rose-400 hover:cursor-pointer"
                         onClick={() => {
-                          handleDeleteLink(link.lid);
+                          handleDeleteLink(link.lid, item.cid);
                         }}
                       >
                         x
                       </a>
                     </li>
-                  )
-              )}
-            </ul>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              ""
+            )}
           </div>
         ))}
       </div>
@@ -133,13 +141,21 @@ export const getServerSideProps = async ({ req, res }) => {
       email: session.user.email,
     },
     select: {
-      categories: true,
-      links: true,
+      categories: {
+        select: {
+          cid: true,
+          label: true,
+          links: true,
+        },
+      },
     },
   });
 
   const data =
-    user && JSON.stringify({ categories: user.categories, links: user.links });
+    user &&
+    JSON.stringify({
+      categories: user.categories,
+    });
 
   return {
     props: {

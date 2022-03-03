@@ -6,14 +6,16 @@ import { prisma } from "@/auth";
 
 export default function Timer({ data }) {
   const parsedData = JSON.parse(data);
-  const [timers, setTimers] = useState(parsedData["timers"]);
+  const [timers, setTimers] = useState([]);
   const [categories, setCategories] = useState(parsedData["categories"]);
   const [deleteStart, setDelete] = useState(false);
   const [deleteList, setDeleteList] = useState([]);
 
+  console.log({ timers, categories, parsedData });
+
   const handleUpdateWatcher = async (tid, status) => {
     fetcher("/api/timer", { tid, status }).then((d) => {
-      setTimers(timers.map((item) => (item.timerId == tid ? d.timer : item)));
+      setTimers(timers.map((item) => (item.tid == tid ? d.timer : item)));
     });
   };
 
@@ -26,9 +28,9 @@ export default function Timer({ data }) {
     });
   };
 
-  const handleDeleteTimer = async (timerId) => {
-    fetcher("/api/timer/delete", { timerId });
-    setTimers(timers.filter((item) => item.timerId !== timerId));
+  const handleDeleteTimer = async (tid) => {
+    fetcher("/api/timer/delete", { tid });
+    setTimers(timers.filter((item) => item.tid !== tid));
   };
 
   const handleDeleteCategories = async (event) => {
@@ -55,7 +57,7 @@ export default function Timer({ data }) {
           <form className="flex flex-col gap-2" onSubmit={handleCreateTimer}>
             <select name="selectCategory">
               {categories.map((item, id) => (
-                <option key={id} value={item.label}>
+                <option key={id} value={item.cid}>
                   {" "}
                   {item.label}{" "}
                 </option>
@@ -132,6 +134,25 @@ export default function Timer({ data }) {
         <h2>View List of Tracker </h2>
 
         <div className="p-1 space-x-1 gap-1">
+          <div>
+            {categories.map((item) => (
+              <div key={item.cid}>
+                {item.timers.length ? (
+                  <div className="p-1 m-1 rounded-md border border-gray-600">
+                    <h3>{item.label}</h3>
+                    <ul className="p-1 list-none">
+                      {item.timers.map((time) => (
+                        <li key={time.tid}>"test"</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : (
+                  ""
+                )}
+              </div>
+            ))}
+          </div>
+
           {timers.map((item, id) => (
             <details key={id} open>
               <summary>
@@ -140,7 +161,7 @@ export default function Timer({ data }) {
                   className="text-gray-500 px-2 hover:text-rose-400 hover:cursor-pointer"
                   onClick={() => {
                     confirm("Are you sure you want to delete this?") &&
-                      handleDeleteTimer(item.timerId);
+                      handleDeleteTimer(item.tid);
                   }}
                 >
                   x
@@ -154,7 +175,7 @@ export default function Timer({ data }) {
                 {item.status == "start" ? " | Tracking..." : ""}
                 <a
                   className="w-6 h-6 rounded-full text-center p-1 mx-2 cursor-pointer"
-                  onClick={() => handleUpdateWatcher(item.timerId, item.status)}
+                  onClick={() => handleUpdateWatcher(item.tid, item.status)}
                 >
                   {item.status == "start" ? "⏸" : "▶"}
                 </a>
@@ -183,14 +204,17 @@ export const getServerSideProps = async ({ req, res }) => {
       email: session.user.email,
     },
     select: {
-      categories: true,
-      timers: true,
+      categories: {
+        select: {
+          cid: true,
+          label: true,
+          timers: true,
+        },
+      },
     },
   });
 
-  const data =
-    user &&
-    JSON.stringify({ categories: user.categories, timers: user.timers });
+  const data = user && JSON.stringify({ categories: user.categories });
 
   return {
     props: {

@@ -9,8 +9,13 @@ import { fetcher } from "lib/fetcher";
 export default function Home({ data }) {
   const quotesUrl =
     "https://raw.githubusercontent.com/JamesFT/Database-Quotes-JSON/master/quotes.json";
-  const parsedData = JSON.parse(data);
-  const { categories, timers, links } = parsedData;
+  let parsedData = {};
+  try {
+    parsedData = JSON.parse(data);
+  } catch (error) {
+    console.log(error);
+  }
+  const { categories, trackers, links } = parsedData;
   const [quote, setQuote] = useState();
 
   console.log(parsedData);
@@ -29,7 +34,7 @@ export default function Home({ data }) {
       {!parsedData.login && <div className=" p-4">Hello there!</div>}
       {parsedData.login && (
         <div className="flex flex-col sm:flex-row gap-2">
-          <div className="w-auto sm:border-gray-800 sm:border-r-2 p-1 sm:h-screen sm:w-86 md:w-[60vw]">
+          <div className="w-auto sm:border-gray-800 sm:border-r-2 p-1 sm:h-screen sm:w-86 md:w-[60vw] lg:w-[40vw]">
             {parsedData.categories && <Category data={parsedData.categories} />}
             <details open>
               <summary> Inspiration </summary>
@@ -52,33 +57,33 @@ export default function Home({ data }) {
                 className="p-1 m-1 rounded-md border border-gray-600"
               >
                 <h3>{item.label}</h3>
-                <details open>
-                  {" "}
-                  <summary>Links:</summary>
-                  <span className="p-4">
-                    <span className="pl-2">⤷</span>
+                {item.links.length ? (
+                  <details open>
+                    <summary>Links:</summary>
+                    <span className="p-4">
+                      <span className="pl-2">⤷</span>
 
-                    {links.map(
-                      (link) =>
-                        link.category == item.label && (
-                          <a
-                            href={link.refer}
-                            className="text-sky-700 hover:underline"
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            {" "}
-                            {link.label},
-                          </a>
-                        )
-                    )}
-                  </span>
-                </details>
+                      {item.links.map((link) => (
+                        <a
+                          href={link.refer}
+                          className="text-sky-700 hover:underline"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {" "}
+                          {link.label},
+                        </a>
+                      ))}
+                    </span>
+                  </details>
+                ) : (
+                  ""
+                )}
                 <ul className="p-1 list-none">
-                  {timers.map(
-                    (time, id) =>
-                      time.category == item.label && (
-                        <li key={id}> {time.description} </li>
+                  {trackers?.map(
+                    (track, id) =>
+                      track.category == item.label && (
+                        <li key={id}> {track.description} </li>
                       )
                   )}
                 </ul>
@@ -112,33 +117,32 @@ export const getServerSideProps = async ({ req, res }) => {
         select: {
           cid: true,
           label: true,
-        },
-      },
-      links: {
-        select: {
-          label: true,
-          category: true,
-          refer: true,
-        },
-      },
-      timers: {
-        select: {
-          timerId: true,
-          description: true,
-          category: true,
-          status: true,
-          duration: true,
+          links: {
+            select: {
+              label: true,
+              category: true,
+              refer: true,
+            },
+          },
+          trackers: {
+            select: {
+              tid: true,
+              description: true,
+              category: true,
+              status: true,
+              duration: true,
+            },
+          },
         },
       },
     },
   });
-
   const data =
     user &&
     JSON.stringify({
       categories: user.categories,
-      timers: user.timers,
-      links: user.links,
+      trackers: user.categories.trackers,
+      links: user.categories.links,
       login: true,
     });
 

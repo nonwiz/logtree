@@ -12,12 +12,17 @@ export default async function handler(req, res) {
       data: {
         label,
         refer,
-        category,
-        user: { connect: { email: session.user.email } },
+        category: {
+          connect: {
+            cid: Number(category),
+          },
+        },
       },
     });
+    console.log(link);
     res.status(200).json({ link });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error });
   }
 }

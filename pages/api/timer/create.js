@@ -12,10 +12,13 @@ export default async function handler(req, res) {
     const timer = await prisma.timer.create({
       data: {
         status: "start",
-        category,
+        category: {
+          connect: {
+            cid: Number(category),
+          },
+        },
         description,
         duration: 0,
-        user: { connect: { email: session.user.email } },
         watchers: {
           create: {},
         },

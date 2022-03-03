@@ -51,25 +51,26 @@ model Category {
   label  String
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trackers Tracker[]
+  links Link[]
 }
 
 model Watcher {
   wid     Int       @id @default(autoincrement())
   start   DateTime  @default(now())
   end     DateTime?
-  timerId Int
-  timer   Timer     @relation(fields: [timerId], references: [timerId], onDelete: Cascade)
+  trackerId Int
+  tracker   Tracker     @relation(fields: [trackerId], references: [tid], onDelete: Cascade)
 }
 
-model Timer {
-  timerId         Int       @id @default(autoincrement())
+model Tracker {
+  tid         Int       @id @default(autoincrement())
   description String?
   startDate   DateTime  @default(now())
   duration    Int?
-  userId      String
   status    String? @default("start")
-  category    String?
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category    Category @relation(fields: [categoryId], references: [cid], onDelete: Cascade)
+  categoryId  Int
   watchers    Watcher[]
   notes Note[]
   toDos ToDo[]
@@ -84,23 +85,20 @@ model User {
   accounts      Account[]
   sessions      Session[]
   categories    Category[]
-  timers        Timer[]
-  links Link[]
 }
 
 model Link {
   lid Int @id @default(autoincrement())
   label String
   refer String
-  category  String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId  String
+  category    Category @relation(fields: [categoryId], references: [cid], onDelete: Cascade)
+  categoryId  Int
 }
 
 model Note {
   nid Int @id @default(autoincrement())
-  timer Timer @relation(fields: [timerId], references: [timerId])
-  timerId Int
+  tracker Tracker @relation(fields: [trackerId], references: [tid])
+  trackerId Int
   description String
 
 }
@@ -109,8 +107,8 @@ model ToDo {
   tid Int @id @default(autoincrement())
   status  Boolean @default(false)
   description String
-  timer Timer @relation(fields: [timerId], references: [timerId])
-  timerId Int
+  tracker Tracker @relation(fields: [trackerId], references: [tid])
+  trackerId Int
 }
 
 model VerificationToken {
