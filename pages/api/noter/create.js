@@ -1,12 +1,12 @@
 import { prisma } from "@/auth";
 
 export default async function handler(req, res) {
-  const { description, timerId } = req.body;
-  console.log({ timerId, description });
+  const { description, trackerId } = req.body;
+  console.log({ trackerId, description });
   try {
-    const timer = await prisma.timer.update({
+    const tracker = await prisma.tracker.update({
       where: {
-        timerId: Number(timerId),
+        trackerId: Number(trackerId),
       },
       data: {
         notes: {
@@ -19,8 +19,8 @@ export default async function handler(req, res) {
         notes: true,
       },
     });
-    console.log(timer);
-    res.status(200).json({ timer });
+    console.log(tracker);
+    res.status(200).json({ tracker });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error });

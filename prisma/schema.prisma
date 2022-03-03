@@ -100,7 +100,8 @@ model Note {
   tracker Tracker @relation(fields: [trackerId], references: [trackerId])
   trackerId Int
   description String
-
+  marked  Boolean @default(false)
+  style String?
 }
 
 model ToDo {
@@ -115,6 +116,5 @@ model VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
-
   @@unique([identifier, token])
 }
