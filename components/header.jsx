@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 
@@ -8,6 +8,7 @@ const getLabel = (objArr, link) => {
 };
 
 function Header() {
+  const [command, setCommand] = useState("");
   const { route } = useRouter();
   const { data: session } = useSession();
   const links = [
@@ -25,6 +26,13 @@ function Header() {
     const label = getLabel(links, route);
     document.title = `${label} | Logtree`;
     document.querySelector("[name=url]").value = label;
+    const handleKeyUp = (e) => {
+      console.log("event", e, e.keyCode);
+    };
+    document.addEventListener("keyup", handleKeyUp);
+    return () => {
+      document.removeEventListener("keyup", handleKeyUp);
+    };
   });
 
   return (
@@ -51,6 +59,7 @@ function Header() {
           </span>
         </div>
         <div className="flex flex-row gap-2">
+          <input type="text" value={command} onChange={(e) => console.log(e)} />
           {session?.user?.image && (
             <img
               src={session.user.image}

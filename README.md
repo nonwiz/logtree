@@ -38,6 +38,7 @@ This is just some bonus for fun.
 
 # To do:
 - Make a To do - sharable one.
+- add keyboard shortcut
 
 ## Log
 - 02-03-2022: update the dashboard

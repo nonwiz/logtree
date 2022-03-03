@@ -25,7 +25,10 @@ export default function Noter({ data }) {
     event.preventDefault();
     const data = getFieldsValues(event, ["trackerId", "description"]);
     fetcher("/api/noter/create", data).then((d) => {
-      console.log(d);
+      setTrackers([
+        d.tracker,
+        ...trackers.filter((track) => track.trackerId != d.tracker.trackerId),
+      ]);
     });
   };
 
@@ -71,7 +74,7 @@ export default function Noter({ data }) {
         </details>
       </div>
 
-      <div className="w-full p-2">
+      <div className="w-1/2 p-2">
         <h2>View List of Note </h2>
         {trackers.map((item) => (
           <div
@@ -79,13 +82,12 @@ export default function Noter({ data }) {
             className="p-1 m-1 rounded-md border border-gray-600"
           >
             <h3>{item.description}</h3>
-            <div className="flex flex-wrap">
+            <div className="">
               {item.notes.map((note) => (
-                <div
-                  key={note.nid}
-                  className="p-1 m-1 bg-gray-300 rounded-md w-60"
-                >
-                  <div>{note.description}</div>
+                <div key={note.nid} className="p-1 m-1 bg-gray-300 rounded-md">
+                  <div className="max-w-prose break-words">
+                    <p className="text-sm">{note.description}</p>
+                  </div>
                   <div className="flex justify-between mt-1">
                     <a
                       className="cursor-pointer hover:underline"
