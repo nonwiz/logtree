@@ -60,11 +60,11 @@ model Watcher {
   start   DateTime  @default(now())
   end     DateTime?
   trackerId Int
-  tracker   Tracker     @relation(fields: [trackerId], references: [tid], onDelete: Cascade)
+  tracker   Tracker     @relation(fields: [trackerId], references: [trackerId], onDelete: Cascade)
 }
 
 model Tracker {
-  tid         Int       @id @default(autoincrement())
+  trackerId         Int       @id @default(autoincrement())
   description String?
   startDate   DateTime  @default(now())
   duration    Int?
@@ -97,17 +97,17 @@ model Link {
 
 model Note {
   nid Int @id @default(autoincrement())
-  tracker Tracker @relation(fields: [trackerId], references: [tid])
+  tracker Tracker @relation(fields: [trackerId], references: [trackerId])
   trackerId Int
   description String
 
 }
 
 model ToDo {
-  tid Int @id @default(autoincrement())
+  toDoId Int @id @default(autoincrement())
   status  Boolean @default(false)
   description String
-  tracker Tracker @relation(fields: [trackerId], references: [tid])
+  tracker Tracker @relation(fields: [trackerId], references: [trackerId])
   trackerId Int
 }
 

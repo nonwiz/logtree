@@ -9,7 +9,7 @@ export default async function handler(req, res) {
   console.log("Create function trigger", req.body, req.method);
   try {
     const { category, description } = req.body;
-    const timer = await prisma.timer.create({
+    const tracker = await prisma.tracker.create({
       data: {
         status: "start",
         category: {
@@ -24,8 +24,8 @@ export default async function handler(req, res) {
         },
       },
     });
-    console.log("Timer creation", timer);
-    return res.status(200).json({ timer });
+    console.log("tracker creation", tracker);
+    return res.status(200).json({ tracker });
   } catch (error) {
     res.status(500).json({ error });
   }

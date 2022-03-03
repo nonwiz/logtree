@@ -6,9 +6,7 @@ import { prisma } from "@/auth";
 export default function Linker({ data }) {
   const parsedData = JSON.parse(data);
   const [categories, setCategories] = useState(parsedData["categories"]);
-  const [links, setLinks] = useState(categories.links);
   const [toast, setToast] = useState({ open: false, text: "" });
-  console.log(links, parsedData);
 
   const handleCreateLink = async (event) => {
     event.preventDefault();
@@ -43,15 +41,12 @@ export default function Linker({ data }) {
   };
 
   return (
-    <div className="flex flex-wrap">
-      <div className="w-1/2 border border-r-gray-800 h-[800px]">
+    <div className="flex flex-col sm:flex-row gap-2">
+      <div className="w-auto sm:border-gray-800 sm:border-r-2 p-1 sm:h-screen sm:w-86 md:w-[60vw] lg:w-[40vw]">
         <details open>
           <summary>Manage Topic</summary>
           <div className="p-1 border border-gray-600 rounded-md pt-4 m-1">
-            <form
-              className="flex py-2 px-1 flex-col"
-              onSubmit={handleCreateLink}
-            >
+            <form className="flex flex-col gap-2" onSubmit={handleCreateLink}>
               <select name="category">
                 {categories.map((item, id) => (
                   <option key={id} value={item.cid}>
@@ -59,24 +54,27 @@ export default function Linker({ data }) {
                   </option>
                 ))}
               </select>
+              <textarea name="refer" placeholder="Put your link here..." />
 
-              <div>
-                <textarea name="refer" placeholder="Put your link here." />
-              </div>
-              <div>
+              <hr className="border-gray-800 mt-2" />
+              <div className="flex flex-row px-1 py-1">
                 <input
+                  className="bg-gray-200 w-3/4 border border-gray-600 rounded-md p-1 mr-1"
                   type="text"
                   name="label"
                   placeholder="Label"
-                  className="bg-gray-200 w-auto border border-gray-600 rounded-md p-1 mr-1"
                 />
-                <button className="w-1/4">Add</button>
+
+                <button className="w-1/4 bg-gray-800 text-gray-100 hover:bg-gray-700">
+                  Add
+                </button>
               </div>
             </form>
           </div>
         </details>
       </div>
-      <div className="w-1/2 px-2">
+
+      <div className="w-full p-2">
         <h2>View List of Link </h2>
         {categories.map((item) => (
           <div key={item.cid}>

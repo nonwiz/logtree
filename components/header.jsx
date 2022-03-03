@@ -12,7 +12,7 @@ function Header() {
   const { data: session } = useSession();
   const links = [
     { label: "Index", link: "/" },
-    { label: "Tracker", link: "/timer" },
+    { label: "Tracker", link: "/tracker" },
     { label: "Links", link: "/linker" },
     { label: "Notes", link: "/noter" },
     // { label: "Activity", link: "/" },

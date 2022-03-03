@@ -7,10 +7,11 @@ export default async function handler(req, res) {
     return res.status(403).json({ message: "Request forbidden" });
   }
   try {
-    const { timerId } = req.body;
-    await prisma.timer.delete({ where: { timerId } });
-    return res.status(200).json({ message: "delete successfully" });
+    const { tid } = req.body;
+    await prisma.tracker.delete({ where: { trackerId: Number(tid) } });
+    res.status(200).json({ message: "delete successfully" });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error });
   }
 }

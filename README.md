@@ -35,6 +35,8 @@ This is just some bonus for fun.
 - Able to create/delete Category (Topic)
 - See the ongoing tracking, recent notes, recent links
 
+# To do:
+- Make a To do - sharable one.
 
 ## Log
 - 02-03-2022: update the dashboard

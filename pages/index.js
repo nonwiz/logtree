@@ -15,10 +15,8 @@ export default function Home({ data }) {
   } catch (error) {
     console.log(error);
   }
-  const { categories, trackers, links } = parsedData;
+  const { categories } = parsedData;
   const [quote, setQuote] = useState();
-
-  console.log(parsedData);
 
   useEffect(() => {
     const query = fetcher("/api/quotes/", { url: quotesUrl });
@@ -35,6 +33,7 @@ export default function Home({ data }) {
       {parsedData.login && (
         <div className="flex flex-col sm:flex-row gap-2">
           <div className="w-auto sm:border-gray-800 sm:border-r-2 p-1 sm:h-screen sm:w-86 md:w-[60vw] lg:w-[40vw]">
+            {/* THis is the first column */}
             {parsedData.categories && <Category data={parsedData.categories} />}
             <details open>
               <summary> Inspiration </summary>
@@ -48,12 +47,12 @@ export default function Home({ data }) {
               </div>
             </details>
           </div>
-          <div className="bg-teal-500 w-full p-2">
+          <div className="w-full p-2">
             {/* This is the second column or the right column when width-sm */}
             <h2>Recent Tracker </h2>
-            {categories.map((item) => (
+            {categories.map((item, id) => (
               <div
-                key={item.cid}
+                key={id}
                 className="p-1 m-1 rounded-md border border-gray-600"
               >
                 <h3>{item.label}</h3>
@@ -63,15 +62,16 @@ export default function Home({ data }) {
                     <span className="p-4">
                       <span className="pl-2">⤷</span>
 
-                      {item.links.map((link) => (
+                      {item.links.map((link, id) => (
                         <a
+                          key={id}
                           href={link.refer}
                           className="text-sky-700 hover:underline"
                           target="_blank"
                           rel="noreferrer"
                         >
                           {" "}
-                          {link.label},
+                          {link.label}
                         </a>
                       ))}
                     </span>
@@ -79,14 +79,7 @@ export default function Home({ data }) {
                 ) : (
                   ""
                 )}
-                <ul className="p-1 list-none">
-                  {trackers?.map(
-                    (track, id) =>
-                      track.category == item.label && (
-                        <li key={id}> {track.description} </li>
-                      )
-                  )}
-                </ul>
+                <ul className="p-1 list-none"></ul>
               </div>
             ))}
           </div>
@@ -126,7 +119,7 @@ export const getServerSideProps = async ({ req, res }) => {
           },
           trackers: {
             select: {
-              tid: true,
+              trackerId: true,
               description: true,
               category: true,
               status: true,
