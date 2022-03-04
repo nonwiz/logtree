@@ -3,49 +3,29 @@ import { getSession } from "next-auth/react";
 import { fetcher, getFieldsValues } from "lib/fetcher";
 import { prisma } from "@/auth";
 
-const filterOutEle = (obj, field, nestedField, id) => {
-  obj[field] = obj[field].filter((item) => item[nestedField] != id);
-  return obj;
-};
-
 export default function Noter({ data }) {
   const parsedData = JSON.parse(data);
-  const categories = parsedData["categories"];
-  const topics = categories
-    .map((item) => item.trackers)
-    .reduce((obj, curr) => {
-      return [...obj, ...curr];
-    }, []);
-  console.log(topics);
-  const [trackers, setTrackers] = useState(topics);
-  const [notes, setnotes] = useState(parsedData["notes"]);
-  const [toast, setToast] = useState({ open: false, text: "" });
+  const [categories, setCategories] = useState(parsedData["categories"]);
 
   const handleCreateNote = async (event) => {
     event.preventDefault();
-    const data = getFieldsValues(event, ["trackerId", "description"]);
+    const data = getFieldsValues(event, ["description", "category"]);
     fetcher("/api/noter/create", data).then((d) => {
-      setTrackers([
-        d.tracker,
-        ...trackers.filter((track) => track.trackerId != d.tracker.trackerId),
-      ]);
+      const tmp = [...categories];
+      tmp.filter((item) => item.cid == data.category)[0].notes.push(d.note);
+      setCategories(tmp);
     });
   };
 
-  const handleDeleteNote = async (nid, trackerId) => {
-    fetcher("/api/noter/delete", { nid }).then((d) => {
-      setTrackers([
-        ...trackers.map((item) =>
-          item.trackerId == trackerId
-            ? filterOutEle(item, "notes", "nid", nid)
-            : item
-        ),
-      ]);
-    });
-  };
-
-  const showToast = (text) => {
-    setToast({ open: true, text });
+  const handleDeleteNote = async (nid, cid) => {
+    fetcher("/api/noter/delete", { nid });
+    let currentCategory = categories.filter((item) => item.cid == cid)[0];
+    currentCategory.notes = currentCategory.notes.filter(
+      (note) => note.nid != nid
+    );
+    setCategories(
+      categories.map((item) => (item.cid == cid ? currentCategory : item))
+    );
   };
 
   return (
@@ -55,60 +35,69 @@ export default function Noter({ data }) {
           <summary>Manage Topic</summary>
           <div className="p-1 border border-gray-600 rounded-md pt-4 m-1">
             <form className="flex flex-col gap-2" onSubmit={handleCreateNote}>
-              <select name="trackerId">
-                {trackers.map((item, id) => (
-                  <option key={id} value={item.trackerId}>
-                    {item.description}
+              <select name="category">
+                {categories.map((item, id) => (
+                  <option key={id} value={item.cid}>
+                    {item.label}
                   </option>
                 ))}
               </select>
-
-              <textarea name="description" placeholder="Put your Note here." />
-              <input
-                type="submit"
-                value="Pin Note"
-                className="bg-gray-800 text-gray-50 rounded-md"
+              <textarea
+                name="description"
+                placeholder="Write down your note here..."
               />
+
+              <hr className="border-gray-800 mt-2" />
+              <button className="w-full bg-gray-800 text-gray-100 hover:bg-gray-700">
+                Pin Note
+              </button>
             </form>
           </div>
         </details>
       </div>
 
-      <div className="w-1/2 p-2">
+      <div className="w-full p-2">
         <h2>View List of Note </h2>
-        {trackers.map((item) => (
-          <div
-            key={item.trackerId}
-            className="p-1 m-1 rounded-md border border-gray-600"
-          >
-            <h3>{item.description}</h3>
-            <div className="">
-              {item.notes.map((note) => (
-                <div key={note.nid} className="p-1 m-1 bg-gray-300 rounded-md">
-                  <div className="max-w-prose break-words">
-                    <p className="text-sm">{note.description}</p>
-                  </div>
-                  <div className="flex justify-between mt-1">
-                    <a
-                      className="cursor-pointer hover:underline"
-                      onClick={() => {
-                        navigator.clipboard.writeText(note.description);
-                      }}
-                    >
-                      📋
-                    </a>
-                    <a
-                      className="text-gray-500 hover:text-rose-400 hover:cursor-pointer"
-                      onClick={() => {
-                        handleDeleteNote(note.nid, item.trackerId);
-                      }}
-                    >
-                      🗑
-                    </a>
-                  </div>
+        {categories.map((item) => (
+          <div key={item.cid}>
+            {item.notes.length ? (
+              <details open>
+                <summary> {item.label} </summary>
+                <div className="p-1 m-1 rounded-md border border-gray-600">
+                  <ul className="m-1 list-none">
+                    {item.notes.map((note) => (
+                      <li
+                        key={note.nid}
+                        className="p-2 bg-gray-300 rounded-md m-1"
+                      >
+                        <div className="word-break">{note.description}</div>
+                        <div className="flex flex-row justify-between py-1">
+                          <a
+                            className="cursor-pointer hover:underline"
+                            onClick={() => {
+                              navigator.clipboard.writeText(note.description);
+                            }}
+                          >
+                            📋
+                          </a>
+
+                          <a
+                            className="text-gray-500 hover:text-rose-400 hover:cursor-pointer"
+                            onClick={() => {
+                              handleDeleteNote(note.nid, item.cid);
+                            }}
+                          >
+                            x
+                          </a>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              ))}
-            </div>
+              </details>
+            ) : (
+              ""
+            )}
           </div>
         ))}
       </div>
@@ -134,21 +123,19 @@ export const getServerSideProps = async ({ req, res }) => {
     select: {
       categories: {
         select: {
-          trackers: {
-            select: {
-              trackerId: true,
-              description: true,
-              notes: true,
-            },
-          },
+          cid: true,
+          label: true,
+          notes: true,
         },
       },
     },
   });
 
-  const data = JSON.stringify({
-    categories: user.categories,
-  });
+  const data =
+    user &&
+    JSON.stringify({
+      categories: user.categories,
+    });
 
   return {
     props: {

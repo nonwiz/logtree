@@ -53,6 +53,7 @@ model Category {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   trackers Tracker[]
   links Link[]
+  notes Note[]
 }
 
 model Watcher {
@@ -72,8 +73,6 @@ model Tracker {
   category    Category @relation(fields: [categoryId], references: [cid], onDelete: Cascade)
   categoryId  Int
   watchers    Watcher[]
-  notes Note[]
-  toDos ToDo[]
 }
 
 model User {
@@ -97,19 +96,13 @@ model Link {
 
 model Note {
   nid Int @id @default(autoincrement())
-  tracker Tracker @relation(fields: [trackerId], references: [trackerId])
-  trackerId Int
   description String
+  date  DateTime @default(now())
   marked  Boolean @default(false)
   style String?
-}
-
-model ToDo {
-  toDoId Int @id @default(autoincrement())
-  status  Boolean @default(false)
-  description String
-  tracker Tracker @relation(fields: [trackerId], references: [trackerId])
-  trackerId Int
+  category    Category @relation(fields: [categoryId], references: [cid], onDelete: Cascade)
+  categoryId  Int
+ 
 }
 
 model VerificationToken {

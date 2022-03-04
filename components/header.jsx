@@ -27,7 +27,7 @@ function Header() {
     document.title = `${label} | Logtree`;
     document.querySelector("[name=url]").value = label;
     const handleKeyUp = (e) => {
-      console.log("event", e, e.keyCode);
+      // console.log("event", e, e.keyCode);
     };
     document.addEventListener("keyup", handleKeyUp);
     return () => {

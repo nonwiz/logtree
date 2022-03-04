@@ -13,7 +13,7 @@ export default function Tracker({ data }) {
         (category) => category.cid == cid
       )[0];
       currentCategory.trackers = currentCategory.trackers.map((track) =>
-        track.tid == d.tracker.tid ? d.tracker : track
+        track.trackerId == d.tracker.trackerId ? d.tracker : track
       );
       setCategories(
         categories.map((category) =>

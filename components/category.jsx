@@ -9,7 +9,7 @@ export const Category = (data) => {
 
   const handleDeleteCategories = async (event) => {
     event.preventDefault();
-    fetcher("/api/timer/category/delete", { deleteList });
+    fetcher("/api/tracker/category/delete", { deleteList });
     setCategories(
       categories.filter((item) => !(deleteList.indexOf(item.cid) > -1))
     );
@@ -18,7 +18,7 @@ export const Category = (data) => {
   const handleCreateCategory = async (event) => {
     event.preventDefault();
     const label = event.target.querySelector("[name=label]").value;
-    fetcher("/api/timer/category/create", { label }).then((d) => {
+    fetcher("/api/tracker/category/create", { label }).then((d) => {
       setCategories([...categories, d.category]);
     });
   };
