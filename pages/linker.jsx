@@ -2,15 +2,22 @@ import { useState } from "react";
 import { getSession } from "next-auth/react";
 import { fetcher, getFieldsValues } from "lib/fetcher";
 import { prisma } from "@/auth";
+import { useRouter } from "next/router";
 
 export default function Linker({ data }) {
   const parsedData = JSON.parse(data);
   const [categories, setCategories] = useState(parsedData["categories"]);
+
+  const router = useRouter();
+
+  if (!categories.length) {
+    alert("Please create Topic or category first before coming here");
+    router.push("/");
+  }
   const linkLen = categories.reduce(
     (len, cate) => (len += cate.links.length),
     0
   );
-  console.log({ length });
   const handleCreateLink = async (event) => {
     event.preventDefault();
     const data = getFieldsValues(event, ["category", "refer", "label"]);
@@ -62,7 +69,12 @@ export default function Linker({ data }) {
                   </option>
                 ))}
               </select>
-              <textarea name="refer" placeholder="Put your link here..." />
+              <input
+                type="url"
+                name="refer"
+                className="bg-gray-200 rounded-md p-1 mr-1"
+                placeholder="Put your link here..."
+              />
 
               <hr className="border-gray-800 mt-2" />
               <div className="flex flex-row px-1 py-1">

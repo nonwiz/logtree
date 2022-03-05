@@ -3,12 +3,19 @@ import { getSession } from "next-auth/react";
 import { fetcher, getFieldsValues } from "lib/fetcher";
 import { prisma } from "@/auth";
 import ReactMarkdown from "react-markdown";
+import { useRouter } from "next/router";
 
 export default function Noter({ data }) {
+  const router = useRouter();
   const inputList = ["description"];
   const parsedData = JSON.parse(data);
   const [categories, setCategories] = useState(parsedData["categories"]);
   const [editMode, setEdit] = useState(false);
+
+  if (!categories.length) {
+    alert("Please create Topic or category first before coming here");
+    router.push("/");
+  }
 
   const handleCreateNote = async (event) => {
     event.preventDefault();
@@ -24,6 +31,36 @@ export default function Noter({ data }) {
       if (inputList.indexOf(item.name) > -1) item.value = "";
     });
     console.log(event.target);
+  };
+
+  const handleUpdateNote = async (note, categoryId) => {
+    const description = document.getElementById(`note-${note.nid}`);
+    if (note.description != description.value) {
+      console.log(note, description.value);
+      fetcher("/api/noter/update", {
+        note: note.nid,
+        description: description.value,
+        category: categoryId,
+      }).then((d) => {
+        let currentCategory = categories.filter(
+          (item) => item.categoryId == categoryId
+        )[0];
+        currentCategory.notes = currentCategory.notes.filter(
+          (item) => item.nid != note.nid
+        );
+        currentCategory.notes.unshift(d.note);
+        setCategories(
+          categories.map((item) =>
+            item.categoryId == categoryId ? currentCategory : item
+          )
+        );
+      });
+
+      setEdit(false);
+    } else {
+      description.value = "No changes made...";
+      setTimeout(() => (description.value = note.description), 1000);
+    }
   };
 
   const handleDeleteNote = async (nid, categoryId) => {
@@ -99,42 +136,75 @@ export default function Noter({ data }) {
                             <ReactMarkdown>{note.description}</ReactMarkdown>
                           ) : (
                             <textarea
+                              id={`note-${note.nid}`}
                               className="w-full bg-gray-300"
                               onChange={(e) => {
                                 const height = e.target.scrollHeight;
-                                console.log(e);
                               }}
                               defaultValue={note.description}
                             />
                           )}
                         </div>
-                        <div className="flex flex-row justify-between mt-1">
-                          <div>
+                        {editMode && (
+                          <div className="flex flex-row justify-between mt-1">
+                            <div>
+                              <a
+                                className="cursor-pointer hover:underline"
+                                onClick={(e) => {
+                                  e.target.text = "✓ Copied";
+                                  e.target.className +=
+                                    " text-gray-600 ease-in duration-300 ";
+                                  navigator.clipboard.writeText(
+                                    note.description
+                                  );
+                                  setTimeout(() => {
+                                    e.target.text = "📋";
+                                  }, 1000);
+                                }}
+                              >
+                                📋
+                              </a>
+                            </div>
                             <a
-                              className="cursor-pointer hover:underline"
-                              onClick={(e) => {
-                                e.target.text = "✓ Copied";
-                                e.target.className +=
-                                  " text-gray-600 ease-in duration-300 ";
-                                navigator.clipboard.writeText(note.description);
-                                setTimeout(() => {
-                                  e.target.text = "📋";
-                                }, 1000);
+                              className="text-gray-500 hover:text-rose-400 hover:cursor-pointer"
+                              onClick={() => {
+                                handleUpdateNote(note, item.categoryId);
                               }}
                             >
-                              📋
+                              Save
                             </a>
                           </div>
-
-                          <a
-                            className="text-gray-500 hover:text-rose-400 hover:cursor-pointer"
-                            onClick={() => {
-                              handleDeleteNote(note.nid, item.categoryId);
-                            }}
-                          >
-                            x
-                          </a>
-                        </div>
+                        )}
+                        {!editMode && (
+                          <div className="flex flex-row justify-between mt-1">
+                            <div>
+                              <a
+                                className="cursor-pointer hover:underline"
+                                onClick={(e) => {
+                                  e.target.text = "✓ Copied";
+                                  e.target.className +=
+                                    " text-gray-600 ease-in duration-300 ";
+                                  navigator.clipboard.writeText(
+                                    note.description
+                                  );
+                                  setTimeout(() => {
+                                    e.target.text = "📋";
+                                  }, 1000);
+                                }}
+                              >
+                                📋
+                              </a>
+                            </div>
+                            <a
+                              className="text-gray-500 hover:text-rose-400 hover:cursor-pointer"
+                              onClick={() => {
+                                handleDeleteNote(note.nid, item.categoryId);
+                              }}
+                            >
+                              x
+                            </a>
+                          </div>
+                        )}
                       </li>
                     ))}
                   </ul>

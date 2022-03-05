@@ -1,11 +1,19 @@
 import { useState } from "react";
+import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { fetcher } from "lib/fetcher";
 import { prisma } from "@/auth";
 
 export default function Tracker({ data }) {
+  const router = useRouter();
   const parsedData = JSON.parse(data);
   const [categories, setCategories] = useState(parsedData["categories"]);
+  console.log(categories);
+
+  if (!categories.length) {
+    alert("Please create Topic or category first before coming here");
+    router.push("/");
+  }
 
   const handleUpdateWatcher = async (tid, status, categoryId) => {
     fetcher("/api/tracker", { tid, status }).then((d) => {

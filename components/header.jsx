@@ -27,6 +27,13 @@ function Header() {
     home: { fx: "open", link: "/" },
     links: { fx: "open", link: "/linker" },
     index: { fx: "open", link: "/" },
+    login: { fx: "open", link: "/api/auth/signin" },
+    logout: {
+      fx: "run",
+      runFx: function () {
+        signOut();
+      },
+    },
   };
 
   const runCommand = (e) => {
@@ -34,7 +41,9 @@ function Header() {
     if (commands.hasOwnProperty(master.value)) {
       if (commands[master.value].fx == "open")
         router.push(commands[master.value].link);
-      console.log(e, master, commands);
+      else if (commands[master.value].fx == "run") {
+        commands[master.value].runFx();
+      }
       setTimeout(() => (master.value = ""), 1000);
     }
   };
@@ -43,7 +52,11 @@ function Header() {
     // This is for dynamic mapping the document title base on the url and setting the dropdown base on label
     const label = getLabel(links, route);
     document.title = `${label} | Logtree`;
-    document.querySelector("[name=url]").value = label;
+    const menu = document.querySelector("[name=menu]");
+    setTimeout(() => {
+      menu.value = route;
+    }, 500);
+    // console.log(menu, label, links);
     const handleKeyUp = (e) => {
       const master = document.querySelector("#master");
       if (e.keyCode == "192") {
@@ -67,15 +80,15 @@ function Header() {
           </span>
           <span>:-</span>
           <span className="space-x-2">
-            <select name="url">
+            <select
+              name="menu"
+              id="menu"
+              onChange={(e) => router.push(e.target.value)}
+            >
               {links.map((item, id) => (
-                <Link
-                  href={item.link}
-                  className="hover:underline active:underline decoration-dashed"
-                  key={id}
-                >
-                  <option>{item.label}</option>
-                </Link>
+                <option value={item.link} key={id}>
+                  {item.label}
+                </option>
               ))}
             </select>
           </span>
@@ -86,7 +99,7 @@ function Header() {
             id="master"
             onKeyPress={runCommand}
             placeholder="Press [`]"
-            className="bg-gray-300 p-1 rounded-md text-gray-600"
+            className="bg-gray-300 p-1 rounded-md text-gray-600 w-60"
           />
           <datalist id="commands">
             {Object.keys(commands).map((commandKey, id) => (
@@ -102,7 +115,9 @@ function Header() {
           )}
 
           {!session ? (
-            <Link href="/api/auth/signin"> Sign in </Link>
+            <Link href="/api/auth/signin">
+              <button className="text-gray-600"> Sign in </button>
+            </Link>
           ) : (
             <button
               onClick={() => signOut()}
