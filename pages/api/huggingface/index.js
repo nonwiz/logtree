@@ -15,7 +15,7 @@ export default async function handler(req, res) {
   await cors(req, res);
   const { url, data } = req.body;
   const result = await fetch(url, {
-    method: "GET",
+    method: "POST",
     body: JSON.stringify(data),
   }).then((r) => r.json());
   console.log(result);

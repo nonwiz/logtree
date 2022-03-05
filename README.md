@@ -45,3 +45,4 @@ This is just some bonus for fun.
 ## Log
 - 02-03-2022: update the dashboard
 - 03-03-2022: rename timer to tracker
+- 04-03-2022: update quotes fetching, storing it at local storage

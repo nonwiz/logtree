@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   const { deleteList } = req.body;
   const result = await prisma.category.deleteMany({
     where: {
-      cid: { in: deleteList },
+      categoryId: { in: deleteList },
     },
   });
   res.status(200).json(result);

@@ -6,12 +6,14 @@ import { prisma } from "@/auth";
 export default function Linker({ data }) {
   const parsedData = JSON.parse(data);
   const [categories, setCategories] = useState(parsedData["categories"]);
-  const [toast, setToast] = useState({ open: false, text: "" });
-
+  const linkLen = categories.reduce(
+    (len, cate) => (len += cate.links.length),
+    0
+  );
+  console.log({ length });
   const handleCreateLink = async (event) => {
     event.preventDefault();
     const data = getFieldsValues(event, ["category", "refer", "label"]);
-    console.log(data);
     if (data["label"].length < 1) {
       const splitRefer = data.refer.split(".")[0];
       data["label"] = splitRefer.substr(
@@ -20,19 +22,25 @@ export default function Linker({ data }) {
     }
     fetcher("/api/linker/create", data).then((d) => {
       const tmp = [...categories];
-      tmp.filter((item) => item.cid == data.category)[0].links.push(d.link);
+      tmp
+        .filter((item) => item.categoryId == data.category)[0]
+        .links.push(d.link);
       setCategories(tmp);
     });
   };
 
-  const handleDeleteLink = async (lid, cid) => {
+  const handleDeleteLink = async (lid, categoryId) => {
     fetcher("/api/linker/delete", { lid });
-    let currentCategory = categories.filter((item) => item.cid == cid)[0];
+    let currentCategory = categories.filter(
+      (item) => item.categoryId == categoryId
+    )[0];
     currentCategory.links = currentCategory.links.filter(
       (link) => link.lid != lid
     );
     setCategories(
-      categories.map((item) => (item.cid == cid ? currentCategory : item))
+      categories.map((item) =>
+        item.categoryId == categoryId ? currentCategory : item
+      )
     );
   };
 
@@ -49,7 +57,7 @@ export default function Linker({ data }) {
             <form className="flex flex-col gap-2" onSubmit={handleCreateLink}>
               <select name="category">
                 {categories.map((item, id) => (
-                  <option key={id} value={item.cid}>
+                  <option key={id} value={item.categoryId}>
                     {item.label}
                   </option>
                 ))}
@@ -76,8 +84,9 @@ export default function Linker({ data }) {
 
       <div className="w-full p-2">
         <h2>View List of Link </h2>
+        {!linkLen && <p>You haven't add any link yet.</p>}
         {categories.map((item) => (
-          <div key={item.cid}>
+          <div key={item.categoryId}>
             {item.links.length ? (
               <div className="p-1 m-1 rounded-md border border-gray-600">
                 <h3>{item.label}</h3>
@@ -86,7 +95,13 @@ export default function Linker({ data }) {
                     <li key={link.lid}>
                       <a
                         className="cursor-pointer hover:underline"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.target.text = "✓ Copied";
+                          e.target.className +=
+                            " text-gray-600 ease-in duration-300 ";
+                          setTimeout(() => {
+                            e.target.text = "📋";
+                          }, 1000);
                           navigator.clipboard.writeText(link.refer);
                         }}
                       >
@@ -104,7 +119,7 @@ export default function Linker({ data }) {
                       <a
                         className="text-gray-500 hover:text-rose-400 hover:cursor-pointer"
                         onClick={() => {
-                          handleDeleteLink(link.lid, item.cid);
+                          handleDeleteLink(link.lid, item.categoryId);
                         }}
                       >
                         x
@@ -141,7 +156,7 @@ export const getServerSideProps = async ({ req, res }) => {
     select: {
       categories: {
         select: {
-          cid: true,
+          categoryId: true,
           label: true,
           links: true,
         },

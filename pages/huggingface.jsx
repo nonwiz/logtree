@@ -24,8 +24,8 @@ export default function HuggingFace() {
     );
   };
   return (
-    <div className="flex flex-wrap">
-      <div className="w-1/2 border border-r-gray-800 h-[800px]">
+    <div className="flex flex-col sm:flex-row gap-2">
+      <div className="w-auto sm:border-gray-800 sm:border-r-2 p-1 sm:h-screen sm:w-86 md:w-[60vw] lg:w-[40vw]">
         <div className="border border-gray-800 m-1 p-2 rounded-md">
           <h1>Hugging Face </h1>
           <form className="flex flex-col gap-2" onSubmit={handleGPT2}>
@@ -47,15 +47,14 @@ export default function HuggingFace() {
           </form>
         </div>
         <hr className="border-1 border-solid border-gray-500 m-2" />
+      </div>
+      <div className="w-full p-2">
         <details open>
           <summary>Result</summary>
           <div className="border border-gray-800 m-1 p-2 rounded-md text-gray-500">
             {output.type == "text" && <p>{output.data}</p>}
           </div>
         </details>
-      </div>
-      <div>
-        <h2> Hey </h2>
       </div>
     </div>
   );

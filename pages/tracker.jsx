@@ -7,17 +7,17 @@ export default function Tracker({ data }) {
   const parsedData = JSON.parse(data);
   const [categories, setCategories] = useState(parsedData["categories"]);
 
-  const handleUpdateWatcher = async (tid, status, cid) => {
+  const handleUpdateWatcher = async (tid, status, categoryId) => {
     fetcher("/api/tracker", { tid, status }).then((d) => {
       const currentCategory = [...categories].filter(
-        (category) => category.cid == cid
+        (category) => category.categoryId == categoryId
       )[0];
       currentCategory.trackers = currentCategory.trackers.map((track) =>
         track.trackerId == d.tracker.trackerId ? d.tracker : track
       );
       setCategories(
         categories.map((category) =>
-          category.cid == cid ? currentCategory : category
+          category.categoryId == categoryId ? currentCategory : category
         )
       );
     });
@@ -29,19 +29,26 @@ export default function Tracker({ data }) {
     const description = event.target.querySelector("[name=description]").value;
     fetcher("/api/tracker/create", { category, description }).then((d) => {
       const tmp = [...categories];
-      tmp.filter((item) => item.cid == category)[0].trackers.push(d.tracker);
+      tmp
+        .filter((item) => item.categoryId == category)[0]
+        .trackers.push(d.tracker);
       setCategories(tmp);
     });
+    event.target.querySelector("[name=description]").value = "";
   };
 
-  const handleDeleteTracker = async (tid, cid) => {
+  const handleDeleteTracker = async (tid, categoryId) => {
     fetcher("/api/tracker/delete", { tid });
-    const currentCategory = categories.filter((item) => item.cid == cid)[0];
+    const currentCategory = categories.filter(
+      (item) => item.categoryId == categoryId
+    )[0];
     currentCategory.trackers = currentCategory.trackers.filter(
       (track) => track.trackerId != tid
     );
     setCategories(
-      categories.map((item) => (item.cid == cid ? currentCategory : item))
+      categories.map((item) =>
+        item.categoryId == categoryId ? currentCategory : item
+      )
     );
   };
 
@@ -58,7 +65,7 @@ export default function Tracker({ data }) {
             >
               <select name="selectCategory">
                 {categories.map((item, id) => (
-                  <option key={id} value={item.cid}>
+                  <option key={id} value={item.categoryId}>
                     {" "}
                     {item.label}{" "}
                   </option>
@@ -85,7 +92,7 @@ export default function Tracker({ data }) {
         <div className="p-1 space-x-1 gap-1">
           <div>
             {categories.map((item) => (
-              <div key={item.cid}>
+              <div key={item.categoryId}>
                 {item.trackers.length ? (
                   <div className="p-1 m-1 rounded-md border border-gray-600">
                     <h3>{item.label}</h3>
@@ -102,7 +109,7 @@ export default function Tracker({ data }) {
                                 ) &&
                                   handleDeleteTracker(
                                     track.trackerId,
-                                    item.cid
+                                    item.categoryId
                                   );
                               }}
                             >
@@ -121,7 +128,7 @@ export default function Tracker({ data }) {
                                 handleUpdateWatcher(
                                   track.trackerId,
                                   track.status,
-                                  item.cid
+                                  item.categoryId
                                 )
                               }
                             >
@@ -162,7 +169,7 @@ export const getServerSideProps = async ({ req, res }) => {
     select: {
       categories: {
         select: {
-          cid: true,
+          categoryId: true,
           label: true,
           trackers: true,
         },

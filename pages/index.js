@@ -1,6 +1,5 @@
 import Head from "next/head";
-import Image from "next/image";
-import { getSession, useSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { prisma } from "@/auth";
 import { Category } from "@/components/category";
@@ -17,10 +16,17 @@ export default function Home({ data }) {
   }
   const { categories } = parsedData;
   const [quote, setQuote] = useState();
+  console.log(categories);
 
   useEffect(() => {
-    const query = fetcher("/api/quotes/", { url: quotesUrl });
-    query.then((r) => setQuote(r[Math.floor(Math.random() * r.length - 1)]));
+    const quotes = JSON.parse(localStorage.getItem("quotes"));
+    if (!quotes.length) {
+      const query = fetcher("/api/quotes/", { url: quotesUrl });
+      query.then((result) =>
+        localStorage.setItem("quotes", JSON.stringify(result))
+      );
+    }
+    setQuote(quotes[Math.floor(Math.random() * quotes.length - 1)]);
   }, []);
   return (
     <div>
@@ -49,37 +55,53 @@ export default function Home({ data }) {
           </div>
           <div className="w-full p-2">
             {/* This is the second column or the right column when width-sm */}
-            <h2>Recent Tracker </h2>
+            <h2>Recent Tree </h2>
             {categories.map((item, id) => (
-              <div
-                key={id}
-                className="p-1 m-1 rounded-md border border-gray-600"
-              >
+              <div key={id}>
                 <h3>{item.label}</h3>
-                {item.links.length ? (
-                  <details open>
-                    <summary>Links:</summary>
-                    <span className="p-4">
-                      <span className="pl-2">⤷</span>
+                <div className="p-1 rounded-md border border-gray-600 my-1">
+                  {!item.links.length && !item.notes.length && (
+                    <div className=" text-gray-600 p-2">No links or notes</div>
+                  )}
+                  {item.links.length ? (
+                    <details open>
+                      <summary>Links:</summary>
+                      <span className="p-4">
+                        <span className="pl-2">⤷</span>
 
-                      {item.links.map((link, id) => (
-                        <a
-                          key={id}
-                          href={link.refer}
-                          className="text-sky-700 hover:underline"
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {" "}
-                          {link.label}
-                        </a>
-                      ))}
-                    </span>
-                  </details>
-                ) : (
-                  ""
-                )}
-                <ul className="p-1 list-none"></ul>
+                        {item.links.map((link, id) => (
+                          <a
+                            key={id}
+                            href={link.refer}
+                            className="text-sky-700 hover:underline"
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {" "}
+                            {link.label}
+                          </a>
+                        ))}
+                      </span>
+                    </details>
+                  ) : (
+                    ""
+                  )}
+                  {item.notes.length ? (
+                    <details open>
+                      <summary>Notes</summary>
+                      <div className="">
+                        {item.notes.map((note) => (
+                          <p key={note.nid} className="break-all">
+                            {note.description}
+                          </p>
+                        ))}
+                      </div>
+                    </details>
+                  ) : (
+                    ""
+                  )}
+                  <ul className="p-1 list-none"></ul>
+                </div>
               </div>
             ))}
           </div>
@@ -107,25 +129,10 @@ export const getServerSideProps = async ({ req, res }) => {
     },
     select: {
       categories: {
-        select: {
-          cid: true,
-          label: true,
-          links: {
-            select: {
-              label: true,
-              category: true,
-              refer: true,
-            },
-          },
-          trackers: {
-            select: {
-              trackerId: true,
-              description: true,
-              category: true,
-              status: true,
-              duration: true,
-            },
-          },
+        include: {
+          links: true,
+          trackers: true,
+          notes: true,
         },
       },
     },
@@ -134,8 +141,6 @@ export const getServerSideProps = async ({ req, res }) => {
     user &&
     JSON.stringify({
       categories: user.categories,
-      trackers: user.categories.trackers,
-      links: user.categories.links,
       login: true,
     });
 

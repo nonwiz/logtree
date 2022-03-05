@@ -7,7 +7,7 @@ datasource db {
   provider             = "mysql"
   url                  = env("DATABASE_URL")
   referentialIntegrity = "prisma"
-  shadowDatabaseUrl   = env("SHADOW_DATABASE_URL")
+  shadowDatabaseUrl    = env("SHADOW_DATABASE_URL")
 }
 
 model Inquiry {
@@ -47,30 +47,30 @@ model Session {
 }
 
 model Category {
-  cid    Int    @id @default(autoincrement())
-  label  String
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  trackers Tracker[]
-  links Link[]
-  notes Note[]
+  categoryId Int       @id @default(autoincrement())
+  label      String
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trackers   Tracker[]
+  links      Link[]
+  notes      Note[]
 }
 
 model Watcher {
-  wid     Int       @id @default(autoincrement())
-  start   DateTime  @default(now())
-  end     DateTime?
+  wid       Int       @id @default(autoincrement())
+  start     DateTime  @default(now())
+  end       DateTime?
   trackerId Int
-  tracker   Tracker     @relation(fields: [trackerId], references: [trackerId], onDelete: Cascade)
+  tracker   Tracker   @relation(fields: [trackerId], references: [trackerId], onDelete: Cascade)
 }
 
 model Tracker {
-  trackerId         Int       @id @default(autoincrement())
+  trackerId   Int       @id @default(autoincrement())
   description String?
   startDate   DateTime  @default(now())
   duration    Int?
-  status    String? @default("start")
-  category    Category @relation(fields: [categoryId], references: [cid], onDelete: Cascade)
+  status      String?   @default("start")
+  category    Category  @relation(fields: [categoryId], references: [categoryId], onDelete: Cascade)
   categoryId  Int
   watchers    Watcher[]
 }
@@ -87,27 +87,28 @@ model User {
 }
 
 model Link {
-  lid Int @id @default(autoincrement())
-  label String
-  refer String
-  category    Category @relation(fields: [categoryId], references: [cid], onDelete: Cascade)
-  categoryId  Int
+  lid        Int      @id @default(autoincrement())
+  label      String
+  refer      String
+  category   Category @relation(fields: [categoryId], references: [categoryId], onDelete: Cascade)
+  categoryId Int
 }
 
 model Note {
-  nid Int @id @default(autoincrement())
+  nid         Int      @id @default(autoincrement())
   description String
-  date  DateTime @default(now())
-  marked  Boolean @default(false)
-  style String?
-  category    Category @relation(fields: [categoryId], references: [cid], onDelete: Cascade)
+  date        DateTime @default(now())
+  marked      Boolean  @default(false)
+  style       String?
+  category    Category @relation(fields: [categoryId], references: [categoryId], onDelete: Cascade)
   categoryId  Int
- 
+
 }
 
 model VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
+
   @@unique([identifier, token])
 }

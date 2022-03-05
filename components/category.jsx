@@ -11,8 +11,9 @@ export const Category = (data) => {
     event.preventDefault();
     fetcher("/api/tracker/category/delete", { deleteList });
     setCategories(
-      categories.filter((item) => !(deleteList.indexOf(item.cid) > -1))
+      categories.filter((item) => !(deleteList.indexOf(item.categoryId) > -1))
     );
+    setDelete(false);
   };
 
   const handleCreateCategory = async (event) => {
@@ -21,6 +22,7 @@ export const Category = (data) => {
     fetcher("/api/tracker/category/create", { label }).then((d) => {
       setCategories([...categories, d.category]);
     });
+    event.target.reset();
   };
 
   return (
@@ -37,7 +39,7 @@ export const Category = (data) => {
                 <a
                   className="text-gray-500 hover:text-rose-400 hover:cursor-pointer"
                   onClick={() => {
-                    setDeleteList([...deleteList, item.cid]);
+                    setDeleteList([...deleteList, item.categoryId]);
                     setDelete(true);
                   }}
                 >
@@ -46,6 +48,12 @@ export const Category = (data) => {
               </span>
             ))}
           </div>
+          {deleteStart && (
+            <p className="text-xs text-gray-600">
+              Deleting topic will delete the links, notes, and trackers that are
+              associated to it{" "}
+            </p>
+          )}
           <hr className="border-gray-800 mt-2" />
           {deleteStart && (
             <div className="pt-2">
@@ -55,7 +63,7 @@ export const Category = (data) => {
                   <span className="text-gray-600">
                     {categories.map(
                       (item, id) =>
-                        deleteList.indexOf(item.cid) > -1 && (
+                        deleteList.indexOf(item.categoryId) > -1 && (
                           <span className="px-1" key={id}>
                             {item.label}
                           </span>

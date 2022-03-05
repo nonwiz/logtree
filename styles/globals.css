@@ -34,3 +34,19 @@ code {
 p {
   @apply p-1 text-gray-800;
 }
+
+.note-markdown > h1 {
+  @apply text-xl;
+}
+
+.note-markdown > h2 {
+  @apply text-lg;
+}
+.note-markdown > h3 {
+  @apply text-base;
+}
+
+.note-markdown > h4, h5 {
+  @apply text-base;
+}
+
