@@ -2,7 +2,7 @@ export const Welcome = (data) => {
   return (
     <div className="flex flex-col sm:flex-row gap-2">
       <div className="w-auto sm:border-gray-800 sm:border-r-2 p-1 sm:h-screen sm:w-86 md:w-[60vw] lg:w-[40vw]">
-        <h1> Logtree's Index </h1>
+        <h1> Logtree s Index </h1>
         <details open>
           <summary>Real summary</summary>
           <ul className="list-disc px-4 text-gray-600">
@@ -28,7 +28,7 @@ export const Welcome = (data) => {
           <p>
             This module allow you to track the time you spent on each certain
             topic, you can stop / stop / resume the tracking. This is
-            server-side based tracker, which mean you don't have to worry if you
+            server-side based tracker, which mean you don t have to worry if you
             accidentally close the tab as long as you have access to the
             internet and browser, you can open it to continue.
           </p>
@@ -50,7 +50,7 @@ export const Welcome = (data) => {
       <div>
         <div className="w-full md:w-[60vw] p-2">
           <details open>
-            <summary> What's this? </summary>
+            <summary> What s this? </summary>
             <p>
               This is logtree, a platform compile a lot of useful productivity
               applications together in one bundle and learn users use it easely.
@@ -66,7 +66,7 @@ export const Welcome = (data) => {
               my best to make one to improve myself as well. A lot of things
               happen later on that I got delay until now.
             </p>
-            <p>That's it.</p>
+            <p>That s it.</p>
           </details>
           <details>
             <summary> The Idea </summary>
@@ -81,7 +81,7 @@ export const Welcome = (data) => {
             </p>
             <p>
               There were variety of useful resources that I really like to
-              explore and I did, I didn't pay much attention for a while, and
+              explore and I did, I didn t pay much attention for a while, and
               now my bookmark is super clutter right now. There are many useless
               stuff that I store and now it also had buried those I have
               considered imporant.
@@ -110,7 +110,7 @@ export const Welcome = (data) => {
             <summary> The Timeframe </summary>
             <p>
               {" "}
-              I didn't really set any timeframe for this project, but I wanted
+              I didn t really set any timeframe for this project, but I wanted
               to add the functionality that I need at least by the end of March
               2022.
             </p>
@@ -118,8 +118,8 @@ export const Welcome = (data) => {
           <details>
             <summary> Credits </summary>
             <p>
-              I don't know if Miki Szeles would see this page, but yeah I was
-              browsing and found oen of your blog post, I don't know if I like
+              I don t know if Miki Szeles would see this page, but yeah I was
+              browsing and found oen of your blog post, I don t know if I like
               but yeah, but it gaves me some plagiarism idea on how to write
               this welcome page here, so thank you!{" "}
             </p>

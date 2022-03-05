@@ -96,7 +96,7 @@ export default function Linker({ data }) {
 
       <div className="w-full p-2">
         <h2>View List of Link </h2>
-        {!linkLen && <p>You haven't add any link yet.</p>}
+        {!linkLen && <p>You have not add any link yet.</p>}
         {categories.map((item) => (
           <div key={item.categoryId}>
             {item.links.length ? (
