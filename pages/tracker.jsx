@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { fetcher, useCategories } from "lib/fetcher";
+import { useRouter } from "next/router";
 import { useSWRConfig } from "swr";
 
 export default function Tracker() {
@@ -7,26 +8,71 @@ export default function Tracker() {
   const { mutate } = useSWRConfig();
   const [categories, setCategories] = useState([]);
   console.log(categories);
+  const router = useRouter();
 
   useEffect(() => {
     data && data.categories && setCategories(data.categories);
+
+    if (data && !data.categories && !categories.length) {
+      alert("Please create Topic or category first before coming here");
+      router.push("/");
+    }
   }, [data]);
 
-  const handleUpdateWatcher = async (tid, status, categoryId) => {
-    fetcher("/api/tracker", { tid, status }).then((d) => {
-      const currentCategory = [...categories].filter(
-        (category) => category.categoryId == categoryId
-      )[0];
-      console.log("updating watcher", d);
-      currentCategory.trackers = currentCategory.trackers.map((track) =>
-        track.trackerId == d.tracker.trackerId ? d.tracker : track
+  const handleUpdateWatcher = async (watchers, track, status, category) => {
+    const currentCategory = category;
+    if (status == "start") {
+      // This is for stopping timer
+      const lastWatcher = watchers.pop();
+      const tmp = (new Date() - new Date(lastWatcher.start)) / 1000;
+      const duration = Math.floor(track.duration + tmp);
+      const end = new Date();
+      console.log({ track, status, tmp, duration, end });
+      fetcher("/api/tracker/watchers/end", {
+        tid: track.trackerId,
+        duration,
+        wid: lastWatcher.wid,
+        end,
+      });
+      console.log("Not updated", track);
+      lastWatcher.end = end;
+      track.duration = duration;
+      track.status = "stop";
+      console.log("Updated", track);
+      currentCategory.trackers = currentCategory.trackers.map((item) =>
+        item.trackerId == track.trackerId ? track : item
       );
       setCategories(
-        categories.map((category) =>
-          category.categoryId == categoryId ? currentCategory : category
+        categories.map((item) =>
+          item.categoryId == category.categoryId ? currentCategory : item
         )
       );
-    });
+    } else if (status == "stop") {
+      fetcher("/api/tracker/watchers/continue", {
+        tid: track.trackerId,
+      });
+      track.status = "start";
+      currentCategory.trackers = currentCategory.trackers.map((item) =>
+        item.trackerId == track.trackerId ? track : item
+      );
+      setCategories(
+        categories.map((item) =>
+          item.categoryId == category.categoryId ? currentCategory : item
+        )
+      );
+
+      // This is for con
+      // currentCategory.trackers = currentCategory.trackers.map((item) =>
+      //   item.trackerId == track.trackerId ? track : item
+      // );
+      // setCategories(
+      //   categories.map((item) =>
+      //     item.categoryId == category.categoryId ? currentCategory : item
+      //   )
+      // );
+    }
+
+    mutate("/api/logtree");
   };
 
   const handleCreateTracker = async (event) => {
@@ -134,9 +180,10 @@ export default function Tracker() {
                               className="w-6 h-6 rounded-full text-center p-1 mx-2 cursor-pointer"
                               onClick={() =>
                                 handleUpdateWatcher(
-                                  track.trackerId,
+                                  track.watchers,
+                                  track,
                                   track.status,
-                                  item.categoryId
+                                  item
                                 )
                               }
                             >

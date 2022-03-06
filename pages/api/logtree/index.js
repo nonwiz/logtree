@@ -15,7 +15,11 @@ export default async function handler(req, res) {
         categories: {
           include: {
             links: true,
-            trackers: true,
+            trackers: {
+              include: {
+                watchers: true,
+              },
+            },
             notes: true,
           },
         },
