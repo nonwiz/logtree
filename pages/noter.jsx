@@ -1,21 +1,18 @@
-import { useState } from "react";
-import { getSession } from "next-auth/react";
-import { fetcher, getFieldsValues } from "lib/fetcher";
-import { prisma } from "@/auth";
+import { useState, useEffect } from "react";
+import { useCategories, fetcher, getFieldsValues } from "lib/fetcher";
 import ReactMarkdown from "react-markdown";
-import { useRouter } from "next/router";
+import { useSWRConfig } from "swr";
 
-export default function Noter({ data }) {
-  const router = useRouter();
+export default function Noter() {
+  const { data, isLoading, isError } = useCategories();
+  const { mutate } = useSWRConfig();
   const inputList = ["description"];
-  const parsedData = JSON.parse(data);
-  const [categories, setCategories] = useState(parsedData["categories"]);
+  const [categories, setCategories] = useState([]);
   const [editMode, setEdit] = useState(false);
 
-  if (!categories.length) {
-    alert("Please create Topic or category first before coming here");
-    router.push("/");
-  }
+  useEffect(() => {
+    data && data.categories && setCategories(data.categories);
+  }, [data]);
 
   const handleCreateNote = async (event) => {
     event.preventDefault();
@@ -26,17 +23,17 @@ export default function Noter({ data }) {
         .filter((item) => item.categoryId == data.category)[0]
         .notes.push(d.note);
       setCategories(tmp);
+      mutate("/api/logtree");
     });
     [...event.target.children].forEach((item) => {
       if (inputList.indexOf(item.name) > -1) item.value = "";
     });
-    console.log(event.target);
   };
 
   const handleUpdateNote = async (note, categoryId) => {
     const description = document.getElementById(`note-${note.nid}`);
     if (note.description != description.value) {
-      console.log(note, description.value);
+      // console.log(note, description.value);
       fetcher("/api/noter/update", {
         note: note.nid,
         description: description.value,
@@ -54,6 +51,7 @@ export default function Noter({ data }) {
             item.categoryId == categoryId ? currentCategory : item
           )
         );
+        mutate("/api/logtree");
       });
 
       setEdit(false);
@@ -76,6 +74,7 @@ export default function Noter({ data }) {
         item.categoryId == categoryId ? currentCategory : item
       )
     );
+    mutate("/api/logtree");
   };
 
   return (
@@ -219,42 +218,3 @@ export default function Noter({ data }) {
     </div>
   );
 }
-
-export const getServerSideProps = async ({ req, res }) => {
-  const session = await getSession({ req });
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session.user.email,
-    },
-    select: {
-      categories: {
-        select: {
-          categoryId: true,
-          label: true,
-          notes: true,
-        },
-      },
-    },
-  });
-
-  const data =
-    user &&
-    JSON.stringify({
-      categories: user.categories,
-    });
-
-  return {
-    props: {
-      data,
-    },
-  };
-};

@@ -5,6 +5,7 @@ export default async function handler(req, res) {
     return res.status(403).json({ message: "Request forbidden" });
   }
   const { tid, status } = req.body;
+  console.log({ tid, status });
   try {
     if (status == "start") {
       const tracker = await prisma.tracker.findUnique({

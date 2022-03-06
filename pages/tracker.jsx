@@ -1,25 +1,23 @@
-import { useState } from "react";
-import { useRouter } from "next/router";
-import { getSession } from "next-auth/react";
-import { fetcher } from "lib/fetcher";
-import { prisma } from "@/auth";
+import { useState, useEffect } from "react";
+import { fetcher, useCategories } from "lib/fetcher";
+import { useSWRConfig } from "swr";
 
-export default function Tracker({ data }) {
-  const router = useRouter();
-  const parsedData = JSON.parse(data);
-  const [categories, setCategories] = useState(parsedData["categories"]);
+export default function Tracker() {
+  const { data, isLoading, isError } = useCategories();
+  const { mutate } = useSWRConfig();
+  const [categories, setCategories] = useState([]);
   console.log(categories);
 
-  if (!categories.length) {
-    alert("Please create Topic or category first before coming here");
-    router.push("/");
-  }
+  useEffect(() => {
+    data && data.categories && setCategories(data.categories);
+  }, [data]);
 
   const handleUpdateWatcher = async (tid, status, categoryId) => {
     fetcher("/api/tracker", { tid, status }).then((d) => {
       const currentCategory = [...categories].filter(
         (category) => category.categoryId == categoryId
       )[0];
+      console.log("updating watcher", d);
       currentCategory.trackers = currentCategory.trackers.map((track) =>
         track.trackerId == d.tracker.trackerId ? d.tracker : track
       );
@@ -41,6 +39,7 @@ export default function Tracker({ data }) {
         .filter((item) => item.categoryId == category)[0]
         .trackers.push(d.tracker);
       setCategories(tmp);
+      mutate("/api/logtree");
     });
     event.target.querySelector("[name=description]").value = "";
   };
@@ -53,11 +52,12 @@ export default function Tracker({ data }) {
     currentCategory.trackers = currentCategory.trackers.filter(
       (track) => track.trackerId != tid
     );
-    setCategories(
-      categories.map((item) =>
-        item.categoryId == categoryId ? currentCategory : item
-      )
+    const tmp = categories.map((item) =>
+      item.categoryId == categoryId ? currentCategory : item
     );
+    setCategories(tmp);
+    mutate("/api/logtree");
+    // mutate("/api/logtree", { ...data, categories: tmp }, false);
   };
 
   return (
@@ -158,38 +158,3 @@ export default function Tracker({ data }) {
     </div>
   );
 }
-
-export const getServerSideProps = async ({ req, res }) => {
-  const session = await getSession({ req });
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session.user.email,
-    },
-    select: {
-      categories: {
-        select: {
-          categoryId: true,
-          label: true,
-          trackers: true,
-        },
-      },
-    },
-  });
-
-  const data = user && JSON.stringify({ categories: user.categories });
-
-  return {
-    props: {
-      data,
-    },
-  };
-};

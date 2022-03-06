@@ -24,8 +24,10 @@ function Header() {
   const commands = {
     tracker: { fx: "open", link: "/tracker" },
     notes: { fx: "open", link: "/noter" },
+    noter: { fx: "open", link: "/noter" },
     home: { fx: "open", link: "/" },
     links: { fx: "open", link: "/linker" },
+    linker: { fx: "open", link: "/linker" },
     index: { fx: "open", link: "/" },
     login: { fx: "open", link: "/api/auth/signin" },
     logout: {

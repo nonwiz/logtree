@@ -42,6 +42,10 @@ This is just some bonus for fun.
 - fix tracker, when start or pause, it only show the same thign.
 - Fetch quote, maybe add the quotes into local storage and fetch from there instead to save some resource.
 
+# Learning
+- getServerside should be eliminated, it is very slow in production mode.
+- Try to reduce amount of query
+
 ## Log
 - 02-03-2022: update the dashboard
 - 03-03-2022: rename timer to tracker

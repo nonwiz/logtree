@@ -1,21 +1,19 @@
 import Head from "next/head";
-import { getSession } from "next-auth/react";
 import { useState, useEffect } from "react";
-import { prisma } from "@/auth";
 import { Category } from "@/components/category";
-import { fetcher } from "lib/fetcher";
+import { useCategories, getFetcher, fetcher } from "lib/fetcher";
 import { Welcome } from "@/components/welcome";
 import ReactMarkdown from "react-markdown";
+// import useSWR from "swr";
 
-export default function Home({ data }) {
+export default function Home() {
+  const { data, isLoading, isError } = useCategories();
   const quotesUrl =
     "https://raw.githubusercontent.com/JamesFT/Database-Quotes-JSON/master/quotes.json";
-  let parsedData = {};
   try {
-    parsedData = JSON.parse(data);
   } catch (error) {}
-  const { categories } = parsedData;
   const [quote, setQuote] = useState();
+  console.log({ data, isError, isLoading });
 
   useEffect(() => {
     let quotes;
@@ -45,12 +43,12 @@ export default function Home({ data }) {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {!parsedData.login && <Welcome />}
-      {parsedData.login && (
+      {!data && <Welcome />}
+      {data && data.categories && (
         <div className="flex flex-col sm:flex-row gap-2">
           <div className="w-auto sm:border-gray-800 sm:border-r-2 p-1 sm:h-screen sm:w-86 md:w-[60vw] lg:w-[40vw]">
             {/* THis is the first column */}
-            {parsedData.categories && <Category data={parsedData.categories} />}
+            {data.categories && <Category data={data.categories} />}
             <details open>
               <summary> Inspiration </summary>
               <div className="p-2 bg-gray-300 text-gray-600 m-2 min-h-fit ">
@@ -66,8 +64,8 @@ export default function Home({ data }) {
           <div className="w-full p-2">
             {/* This is the second column or the right column when width-sm */}
             <h2>Recent Tree </h2>
-            {!categories.length && <p>Empty...</p>}
-            {categories.map((item, id) => (
+            {!data.categories.length && <p>Empty...</p>}
+            {data.categories.map((item, id) => (
               <div key={id}>
                 <h3>{item.label}</h3>
                 <div className="p-1 rounded-md border border-gray-600 my-1">
@@ -121,43 +119,3 @@ export default function Home({ data }) {
     </div>
   );
 }
-
-export const getServerSideProps = async ({ req, res }) => {
-  const session = await getSession({ req });
-  if (!session) {
-    return {
-      props: {
-        data: {
-          login: false,
-        },
-      },
-    };
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session.user.email,
-    },
-    select: {
-      categories: {
-        include: {
-          links: true,
-          trackers: true,
-          notes: true,
-        },
-      },
-    },
-  });
-  const data =
-    user &&
-    JSON.stringify({
-      categories: user.categories,
-      login: true,
-    });
-
-  return {
-    props: {
-      data,
-    },
-  };
-};

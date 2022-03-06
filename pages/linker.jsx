@@ -1,19 +1,16 @@
-import { useState } from "react";
-import { getSession } from "next-auth/react";
-import { fetcher, getFieldsValues } from "lib/fetcher";
-import { prisma } from "@/auth";
-import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
+import { useCategories, fetcher, getFieldsValues } from "lib/fetcher";
+import { useSWRConfig } from "swr";
 
-export default function Linker({ data }) {
-  const parsedData = JSON.parse(data);
-  const [categories, setCategories] = useState(parsedData["categories"]);
+export default function Linker() {
+  const { data, isLoading, isError } = useCategories();
+  const { mutate } = useSWRConfig();
+  const [categories, setCategories] = useState([]);
 
-  const router = useRouter();
+  useEffect(() => {
+    data && data.categories && setCategories(data.categories);
+  }, [data]);
 
-  if (!categories.length) {
-    alert("Please create Topic or category first before coming here");
-    router.push("/");
-  }
   const linkLen = categories.reduce(
     (len, cate) => (len += cate.links.length),
     0
@@ -33,6 +30,7 @@ export default function Linker({ data }) {
         .filter((item) => item.categoryId == data.category)[0]
         .links.push(d.link);
       setCategories(tmp);
+      mutate("/api/logtree");
     });
   };
 
@@ -49,10 +47,7 @@ export default function Linker({ data }) {
         item.categoryId == categoryId ? currentCategory : item
       )
     );
-  };
-
-  const showToast = (text) => {
-    setToast({ open: true, text });
+    mutate("/api/logtree");
   };
 
   return (
@@ -149,42 +144,3 @@ export default function Linker({ data }) {
     </div>
   );
 }
-
-export const getServerSideProps = async ({ req, res }) => {
-  const session = await getSession({ req });
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session.user.email,
-    },
-    select: {
-      categories: {
-        select: {
-          categoryId: true,
-          label: true,
-          links: true,
-        },
-      },
-    },
-  });
-
-  const data =
-    user &&
-    JSON.stringify({
-      categories: user.categories,
-    });
-
-  return {
-    props: {
-      data,
-    },
-  };
-};
