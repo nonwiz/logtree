@@ -99,18 +99,20 @@ function Header() {
           </span>
         </div>
         <div className="flex flex-row gap-2">
-          <input
-            list="commands"
-            id="master"
-            onKeyPress={runCommand}
-            placeholder="Press [`]"
-            className="bg-gray-300 p-1 rounded-md text-gray-600 w-60"
-          />
-          <datalist id="commands">
-            {Object.keys(commands).map((commandKey, id) => (
-              <option key={id}>{commandKey}</option>
-            ))}
-          </datalist>
+          <div className="hidden sm:block">
+            <input
+              list="commands"
+              id="master"
+              onKeyPress={runCommand}
+              placeholder="Press [`]"
+              className="bg-gray-300 p-1 rounded-md text-gray-600 w-60"
+            />
+            <datalist id="commands">
+              {Object.keys(commands).map((commandKey, id) => (
+                <option key={id}>{commandKey}</option>
+              ))}
+            </datalist>
+          </div>
           {session?.user?.image && (
             <img
               src={session.user.image}

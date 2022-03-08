@@ -67,7 +67,18 @@ export default function Home() {
             {!data.categories.length && <p>Empty...</p>}
             {data.categories.map((item, id) => (
               <div key={id}>
-                <h3>{item.label}</h3>
+                <div className="flex justify-between">
+                  <h3>{item.label}</h3>
+                  <p>
+                    {Math.floor(
+                      item.trackers.reduce(
+                        (total, curr) => (total += curr.duration),
+                        0
+                      ) / 60
+                    )}{" "}
+                    mins
+                  </p>
+                </div>
                 <div className="p-1 rounded-md border border-gray-600 my-1">
                   {!item.links.length && !item.notes.length && (
                     <div className=" text-gray-600 p-2">No links or notes</div>
