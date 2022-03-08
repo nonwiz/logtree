@@ -1,6 +1,7 @@
 import { fetcher, useCategories } from "lib/fetcher";
 import { useSWRConfig } from "swr";
 import { categorizeObj } from "lib/utils";
+import ShowError from "@/components/showError";
 
 export default function Tracker() {
   const { data, isLoading, isError } = useCategories();
@@ -25,8 +26,6 @@ export default function Tracker() {
 
       mutate("/api/logtree", { ...data, trackers: tmpTrackers }, false);
     });
-
-    console.log("Mutating done", data.trackers);
   };
 
   const handleUpdateWatcherStart = async (track) => {
@@ -39,8 +38,6 @@ export default function Tracker() {
       );
       mutate("/api/logtree", { ...data, trackers: tmpTrackers });
     });
-
-    console.log("Mutating done", data.trackers);
   };
 
   const handleCreateTracker = async (event) => {
@@ -69,13 +66,20 @@ export default function Tracker() {
       (track) => track.trackerId != trackerId
     );
     mutate("/api/logtree", { ...data, trackers: tmpTrackers }, false);
-    fetcher("/api/tracker/delete", { tid: trackerId }).then(() => {
-      mutate("/api/logtree");
-    });
+    fetcher("/api/tracker/delete", { tid: trackerId });
   };
 
   if (isLoading) {
     return <div> Loading... </div>;
+  }
+
+  if (!isLoading || isError) {
+    return (
+      <>
+        {" "}
+        <ShowError />{" "}
+      </>
+    );
   }
 
   return (
@@ -90,11 +94,13 @@ export default function Tracker() {
               onSubmit={handleCreateTracker}
             >
               <select name="selectCategory">
-                {data.categoriesList.map((item, id) => (
-                  <option key={id} value={item.categoryId}>
-                    {item.label}
-                  </option>
-                ))}
+                {data &&
+                  data.categoriesList &&
+                  data.categoriesList.map((item, id) => (
+                    <option key={id} value={item.categoryId}>
+                      {item.label}
+                    </option>
+                  ))}
               </select>
               <textarea
                 name="description"
@@ -116,65 +122,71 @@ export default function Tracker() {
 
         <div className="p-1 space-x-1 gap-1">
           <div>
-            {categorizeObj(data.categoriesList, data.trackers, "trackers").map(
-              (item) => (
-                <div key={item.categoryId}>
-                  {item.trackers.length ? (
-                    <div className="p-1 m-1 rounded-md border border-gray-600">
-                      <h3>{item.label}</h3>
-                      <ul className="p-1 list-none">
-                        {item.trackers.map((track, id) => (
-                          <details
-                            key={id}
-                            className={`${!track.trackerId && "text-gray-600"}`}
-                            open
-                          >
-                            <summary>
-                              {track.description}
-                              {track.trackerId && (
-                                <a
-                                  className="text-gray-500 px-2 hover:text-rose-400 hover:cursor-pointer"
-                                  onClick={() => {
-                                    confirm(
-                                      "Are you sure you want to delete this?"
-                                    ) && handleDeleteTracker(track.trackerId);
-                                  }}
-                                >
-                                  x
-                                </a>
-                              )}
-                            </summary>
-                            <div>
-                              <span className="pr-1">⤷</span>
-                              {track.duration > 60
-                                ? `${Math.floor(track.duration / 60)} min, ${
-                                    track.duration % 60
-                                  } sec`
-                                : `${track.duration} sec`}
-                              {track.status == "start" ? " | Tracking..." : ""}
-                              {track.trackerId && (
-                                <a
-                                  className="w-6 h-6 rounded-full text-center p-1 mx-2 cursor-pointer"
-                                  onClick={() =>
-                                    track.status == "start"
-                                      ? handleUpdateWatcherStop(track)
-                                      : handleUpdateWatcherStart(track)
-                                  }
-                                >
-                                  {track.status == "start" ? "⏸" : "▶"}
-                                </a>
-                              )}
-                            </div>
-                          </details>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : (
-                    ""
-                  )}
-                </div>
-              )
-            )}
+            {data &&
+              data.categoriesList &&
+              categorizeObj(data.categoriesList, data.trackers, "trackers").map(
+                (item) => (
+                  <div key={item.categoryId}>
+                    {item.trackers.length ? (
+                      <div className="p-1 m-1 rounded-md border border-gray-600">
+                        <h3>{item.label}</h3>
+                        <ul className="p-1 list-none">
+                          {item.trackers.map((track, id) => (
+                            <details
+                              key={id}
+                              className={`${
+                                !track.trackerId && "text-gray-600"
+                              }`}
+                              open
+                            >
+                              <summary>
+                                {track.description}
+                                {track.trackerId && (
+                                  <a
+                                    className="text-gray-500 px-2 hover:text-rose-400 hover:cursor-pointer"
+                                    onClick={() => {
+                                      confirm(
+                                        "Are you sure you want to delete this?"
+                                      ) && handleDeleteTracker(track.trackerId);
+                                    }}
+                                  >
+                                    x
+                                  </a>
+                                )}
+                              </summary>
+                              <div>
+                                <span className="pr-1">⤷</span>
+                                {track.duration > 60
+                                  ? `${Math.floor(track.duration / 60)} min, ${
+                                      track.duration % 60
+                                    } sec`
+                                  : `${track.duration} sec`}
+                                {track.status == "start"
+                                  ? " | Tracking..."
+                                  : ""}
+                                {track.trackerId && (
+                                  <a
+                                    className="w-6 h-6 rounded-full text-center p-1 mx-2 cursor-pointer"
+                                    onClick={() => {
+                                      track.status == "start"
+                                        ? handleUpdateWatcherStop(track)
+                                        : handleUpdateWatcherStart(track);
+                                    }}
+                                  >
+                                    {track.status == "start" ? "⏸" : "▶"}
+                                  </a>
+                                )}
+                              </div>
+                            </details>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                )
+              )}
           </div>
         </div>
       </div>

@@ -1,57 +1,42 @@
-import { useState, useEffect } from "react";
-import { useCategories, fetcher, getFieldsValues } from "lib/fetcher";
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
+import { useCategories, fetcher, getFieldsValues } from "lib/fetcher";
 import { useSWRConfig } from "swr";
+import { categorizeObj } from "lib/utils";
+import ShowError from "@/components/showError";
 
 export default function Noter() {
   const { data, isLoading, isError } = useCategories();
   const { mutate } = useSWRConfig();
   const inputList = ["description"];
-  const [categories, setCategories] = useState([]);
   const [editMode, setEdit] = useState(false);
-
-  useEffect(() => {
-    data && data.categories && setCategories(data.categories);
-  }, [data]);
 
   const handleCreateNote = async (event) => {
     event.preventDefault();
-    const data = getFieldsValues(event, [...inputList, "category"]);
-    fetcher("/api/noter/create", data).then((d) => {
-      const tmp = [...categories];
-      tmp
-        .filter((item) => item.categoryId == data.category)[0]
-        .notes.push(d.note);
-      setCategories(tmp);
-      mutate("/api/logtree");
+    const formData = getFieldsValues(event, [...inputList, "category"]);
+    fetcher("/api/noter/create", formData).then((d) => {
+      const tmpNotes = [...data.notes, d.note];
+      mutate("/api/logtree", { ...data, notes: tmpNotes }, false);
     });
     [...event.target.children].forEach((item) => {
       if (inputList.indexOf(item.name) > -1) item.value = "";
     });
   };
 
-  const handleUpdateNote = async (note, categoryId) => {
+  const handleUpdateNote = async (note) => {
     const description = document.getElementById(`note-${note.nid}`);
     if (note.description != description.value) {
       // console.log(note, description.value);
+
+      note.description = description.value;
+      const tmpNotes = data.notes.map((noteItem) =>
+        noteItem.nid == note.nid ? note : noteItem
+      );
+      mutate("/api/logtree", { ...data, notes: tmpNotes }, false);
       fetcher("/api/noter/update", {
         note: note.nid,
         description: description.value,
-        category: categoryId,
-      }).then((d) => {
-        let currentCategory = categories.filter(
-          (item) => item.categoryId == categoryId
-        )[0];
-        currentCategory.notes = currentCategory.notes.filter(
-          (item) => item.nid != note.nid
-        );
-        currentCategory.notes.unshift(d.note);
-        setCategories(
-          categories.map((item) =>
-            item.categoryId == categoryId ? currentCategory : item
-          )
-        );
-        mutate("/api/logtree");
+        category: note.categoryId,
       });
 
       setEdit(false);
@@ -61,21 +46,26 @@ export default function Noter() {
     }
   };
 
-  const handleDeleteNote = async (nid, categoryId) => {
+  const handleDeleteNote = async (nid) => {
+    const tmpNotes = data.notes.filter((item) => item.nid != nid);
+    mutate("/api/logtree", { ...data, notes: tmpNotes }, false);
     fetcher("/api/noter/delete", { nid });
-    let currentCategory = categories.filter(
-      (item) => item.categoryId == categoryId
-    )[0];
-    currentCategory.notes = currentCategory.notes.filter(
-      (note) => note.nid != nid
-    );
-    setCategories(
-      categories.map((item) =>
-        item.categoryId == categoryId ? currentCategory : item
-      )
-    );
-    mutate("/api/logtree");
   };
+
+  if (isLoading) {
+    return <div> Loading... </div>;
+  }
+
+  if (!isLoading || isError) {
+    return (
+      <>
+        {" "}
+        <ShowError />{" "}
+      </>
+    );
+  }
+
+  console.log(data, categorizeObj(data.categoriesList, data.notes, "notes"));
 
   return (
     <div className="flex flex-col sm:flex-row gap-2">
@@ -85,7 +75,7 @@ export default function Noter() {
           <div className="p-1 border border-gray-600 rounded-md pt-4 m-1">
             <form className="flex flex-col gap-2" onSubmit={handleCreateNote}>
               <select name="category">
-                {categories.map((item, id) => (
+                {data.categoriesList.map((item, id) => (
                   <option key={id} value={item.categoryId}>
                     {item.label}
                   </option>
@@ -118,7 +108,7 @@ export default function Noter() {
             {!editMode ? "🖉" : "📖"}
           </a>
         </div>
-        {categories.map((item) => (
+        {categorizeObj(data.categoriesList, data.notes, "notes").map((item) => (
           <div key={item.categoryId}>
             {item.notes.length ? (
               <details open>
@@ -167,7 +157,7 @@ export default function Noter() {
                             <a
                               className="text-gray-500 hover:text-rose-400 hover:cursor-pointer"
                               onClick={() => {
-                                handleUpdateNote(note, item.categoryId);
+                                handleUpdateNote(note);
                               }}
                             >
                               Save
@@ -197,7 +187,7 @@ export default function Noter() {
                             <a
                               className="text-gray-500 hover:text-rose-400 hover:cursor-pointer"
                               onClick={() => {
-                                handleDeleteNote(note.nid, item.categoryId);
+                                handleDeleteNote(note.nid);
                               }}
                             >
                               x

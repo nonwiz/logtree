@@ -1,6 +1,7 @@
 import { useCategories, fetcher, getFieldsValues } from "lib/fetcher";
 import { useSWRConfig } from "swr";
 import { categorizeObj } from "lib/utils";
+import ShowError from "@/components/showError";
 
 export default function Linker() {
   const { data, isLoading, isError } = useCategories();
@@ -37,13 +38,20 @@ export default function Linker() {
     const tmpLinks = data.links.filter((link) => link.lid != lid);
 
     mutate("/api/logtree", { ...data, links: tmpLinks }, false);
-    fetcher("/api/linker/delete", { lid }).then(() => {
-      mutate("/api/logtree");
-    });
+    fetcher("/api/linker/delete", { lid });
   };
 
   if (isLoading) {
     return <div> Loading... </div>;
+  }
+
+  if (!isLoading || isError) {
+    return (
+      <>
+        {" "}
+        <ShowError />{" "}
+      </>
+    );
   }
 
   return (

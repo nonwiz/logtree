@@ -6,9 +6,9 @@ import Footer from "@/components/footer";
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   return (
     <SessionProvider session={session}>
-      <main className="relative">
+      <main>
         <Header props={session} />
-        <div className="p-2">
+        <div className="p-2 relative">
           <Component {...pageProps} />
         </div>
         <Footer />
