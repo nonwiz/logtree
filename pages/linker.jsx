@@ -1,54 +1,50 @@
-import { useState, useEffect } from "react";
 import { useCategories, fetcher, getFieldsValues } from "lib/fetcher";
 import { useSWRConfig } from "swr";
+import { categorizeObj } from "lib/utils";
 
 export default function Linker() {
   const { data, isLoading, isError } = useCategories();
   const { mutate } = useSWRConfig();
-  const [categories, setCategories] = useState([]);
+  let linkLen;
 
-  useEffect(() => {
-    data && data.categories && setCategories(data.categories);
-  }, [data]);
-
-  const linkLen = categories.reduce(
-    (len, cate) => (len += cate.links.length),
-    0
-  );
   const handleCreateLink = async (event) => {
     event.preventDefault();
-    const data = getFieldsValues(event, ["category", "refer", "label"]);
-    if (data["label"].length < 1) {
-      const splitRefer = data.refer.split(".")[0];
-      data["label"] = splitRefer.substr(
+    const formData = getFieldsValues(event, ["category", "refer", "label"]);
+    if (formData["label"].length < 1) {
+      const splitRefer = formData.refer.split(".")[0];
+      formData["label"] = splitRefer.substr(
         splitRefer.indexOf("http") > -1 ? "https://".length : 0
       );
     }
-    fetcher("/api/linker/create", data).then((d) => {
-      const tmp = [...categories];
-      tmp
-        .filter((item) => item.categoryId == data.category)[0]
-        .links.push(d.link);
-      setCategories(tmp);
+    const tmpLinks = [
+      ...data.links,
+      {
+        label: formData.label,
+        refer: formData.refer,
+        categoryId: formData.category,
+      },
+    ];
+
+    mutate("/api/logtree", { ...data, links: tmpLinks }, false);
+    fetcher("/api/linker/create", formData).then(() => {
+      mutate("/api/logtree");
+    });
+    event.target.reset();
+    event.target.querySelector("[name=category]").value = formData.category;
+  };
+
+  const handleDeleteLink = async (lid) => {
+    const tmpLinks = data.links.filter((link) => link.lid != lid);
+
+    mutate("/api/logtree", { ...data, links: tmpLinks }, false);
+    fetcher("/api/linker/delete", { lid }).then(() => {
       mutate("/api/logtree");
     });
   };
 
-  const handleDeleteLink = async (lid, categoryId) => {
-    fetcher("/api/linker/delete", { lid });
-    let currentCategory = categories.filter(
-      (item) => item.categoryId == categoryId
-    )[0];
-    currentCategory.links = currentCategory.links.filter(
-      (link) => link.lid != lid
-    );
-    setCategories(
-      categories.map((item) =>
-        item.categoryId == categoryId ? currentCategory : item
-      )
-    );
-    mutate("/api/logtree");
-  };
+  if (isLoading) {
+    return <div> Loading... </div>;
+  }
 
   return (
     <div className="flex flex-col sm:flex-row gap-2">
@@ -58,11 +54,12 @@ export default function Linker() {
           <div className="p-1 border border-gray-600 rounded-md pt-4 m-1">
             <form className="flex flex-col gap-2" onSubmit={handleCreateLink}>
               <select name="category">
-                {categories.map((item, id) => (
-                  <option key={id} value={item.categoryId}>
-                    {item.label}
-                  </option>
-                ))}
+                {data &&
+                  data.categories.map((item, id) => (
+                    <option key={id} value={item.categoryId}>
+                      {item.label}
+                    </option>
+                  ))}
               </select>
               <input
                 type="url"
@@ -87,21 +84,29 @@ export default function Linker() {
             </form>
           </div>
         </details>
+        <details>
+          <summary>To be added</summary>
+          <ul className="px-4 list-disc text-gray-600">
+            <li> Add filtering and automatic sorting </li>
+            <li> Check for existing link </li>
+          </ul>
+        </details>
       </div>
 
       <div className="w-full p-2">
         <h2>View List of Link </h2>
+        <hr />
         {!linkLen && <p>You have not add any link yet.</p>}
-        {categories.map((item) => (
+        {categorizeObj(data.categoriesList, data.links, "links").map((item) => (
           <div key={item.categoryId}>
             {item.links.length ? (
               <div className="p-1 m-1 rounded-md border border-gray-600">
                 <h3>{item.label}</h3>
                 <ul className="p-1 list-none">
-                  {item.links.map((link) => (
-                    <li key={link.lid}>
+                  {item.links.map((link, id) => (
+                    <li key={id}>
                       <a
-                        className="cursor-pointer hover:underline"
+                        className={`cursor-pointer hover:underline `}
                         onClick={(e) => {
                           e.target.text = "✓ Copied";
                           e.target.className +=
@@ -116,21 +121,25 @@ export default function Linker() {
                       </a>
                       <a
                         href={link.refer}
-                        className="text-sky-700 hover:underline"
+                        className={`hover:underline ${
+                          !link.lid ? "text-gray-600" : "text-sky-700"
+                        }`}
                         target="_blank"
                         rel="noreferrer"
                       >
                         {" "}
                         {link.label}{" "}
                       </a>
-                      <a
-                        className="text-gray-500 hover:text-rose-400 hover:cursor-pointer"
-                        onClick={() => {
-                          handleDeleteLink(link.lid, item.categoryId);
-                        }}
-                      >
-                        x
-                      </a>
+                      {link.lid && (
+                        <a
+                          className="text-gray-500 hover:text-rose-400 hover:cursor-pointer"
+                          onClick={() => {
+                            handleDeleteLink(link.lid);
+                          }}
+                        >
+                          x
+                        </a>
+                      )}
                     </li>
                   ))}
                 </ul>
