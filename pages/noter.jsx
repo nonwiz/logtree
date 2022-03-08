@@ -56,11 +56,10 @@ export default function Noter() {
     return <div> Loading... </div>;
   }
 
-  if (!isLoading || isError) {
+  if (!isLoading && data.error) {
     return (
       <>
-        {" "}
-        <ShowError />{" "}
+        <ShowError />
       </>
     );
   }

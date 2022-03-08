@@ -45,7 +45,7 @@ export default function Linker() {
     return <div> Loading... </div>;
   }
 
-  if (!isLoading || isError) {
+  if (!isLoading && data.error) {
     return (
       <>
         {" "}

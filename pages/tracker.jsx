@@ -9,7 +9,6 @@ export default function Tracker() {
 
   const handleUpdateWatcherStop = async (track) => {
     // This is for stopping timer, when status is start
-    console.log("Mutating starting", data.trackers);
     const lastWatcher = track.watchers.pop();
     const end = new Date();
     const tmp = (end - new Date(lastWatcher.start)) / 1000;
@@ -73,11 +72,11 @@ export default function Tracker() {
     return <div> Loading... </div>;
   }
 
-  if (!isLoading || isError) {
+  if (!isLoading && data.error) {
+    console.log(data);
     return (
       <>
-        {" "}
-        <ShowError />{" "}
+        <ShowError />
       </>
     );
   }
