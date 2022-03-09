@@ -94,9 +94,8 @@ export default function Home() {
                       <summary>Links:</summary>
                       <ul className="list-disc px-8">
                         {item.links.map((link, id) => (
-                          <li>
+                          <li key={id}>
                             <a
-                              key={id}
                               href={link.refer}
                               className="text-sky-700 hover:underline"
                               target="_blank"
