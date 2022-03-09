@@ -4,6 +4,7 @@ import { useCategories, fetcher, getFieldsValues } from "lib/fetcher";
 import { useSWRConfig } from "swr";
 import { categorizeObj } from "lib/utils";
 import ShowError from "@/components/showError";
+import ShowLoading from "@/components/showLoading";
 
 export default function Noter() {
   const { data, isLoading, isError } = useCategories();
