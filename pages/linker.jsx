@@ -2,6 +2,7 @@ import { useCategories, fetcher, getFieldsValues } from "lib/fetcher";
 import { useSWRConfig } from "swr";
 import { categorizeObj } from "lib/utils";
 import ShowError from "@/components/showError";
+import ShowLoading from "@/components/showLoading";
 
 export default function Linker() {
   const { data, isLoading, isError } = useCategories();
@@ -42,7 +43,7 @@ export default function Linker() {
   };
 
   if (isLoading) {
-    return <div> Loading... </div>;
+    return <ShowLoading />;
   }
 
   if (!isLoading && data.error) {

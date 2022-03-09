@@ -4,6 +4,8 @@ import { Category } from "@/components/category";
 import { useCategories, getFetcher, fetcher } from "lib/fetcher";
 import { Welcome } from "@/components/welcome";
 import ReactMarkdown from "react-markdown";
+
+import ShowLoading from "@/components/showLoading";
 // import useSWR from "swr";
 
 export default function Home() {
@@ -33,6 +35,10 @@ export default function Home() {
       console.log(error);
     }
   }, []);
+
+  if (isLoading) {
+    return <ShowLoading />;
+  }
   return (
     <div>
       <Head>
@@ -86,9 +92,7 @@ export default function Home() {
                   {item.links.length ? (
                     <details open>
                       <summary>Links:</summary>
-                      <span className="p-4">
-                        <span className="pl-2">⤷</span>
-
+                      <div className="p-4">
                         {item.links.map((link, id) => (
                           <a
                             key={id}
@@ -97,19 +101,18 @@ export default function Home() {
                             target="_blank"
                             rel="noreferrer"
                           >
-                            {" "}
-                            {link.label}
+                            {link.label},{" "}
                           </a>
                         ))}
-                      </span>
+                      </div>
                     </details>
                   ) : (
                     ""
                   )}
                   {item.notes.length ? (
-                    <details open>
+                    <details>
                       <summary>Notes</summary>
-                      <div className="">
+                      <div className="p-2">
                         {item.notes.map((note) => (
                           <div key={note.nid} className="break-all">
                             <ReactMarkdown>{note.description}</ReactMarkdown>

@@ -2,6 +2,7 @@ import { fetcher, useCategories } from "lib/fetcher";
 import { useSWRConfig } from "swr";
 import { categorizeObj } from "lib/utils";
 import ShowError from "@/components/showError";
+import ShowLoading from "@/components/showLoading";
 
 export default function Tracker() {
   const { data, isLoading, isError } = useCategories();
@@ -9,10 +10,19 @@ export default function Tracker() {
 
   const handleUpdateWatcherStop = async (track) => {
     // This is for stopping timer, when status is start
-    const lastWatcher = track.watchers.pop();
+    //
+    const lastWatcher = track.watchers.at(-1);
     const end = new Date();
     const tmp = (end - new Date(lastWatcher.start)) / 1000;
     const duration = Math.floor(track.duration + tmp);
+    lastWatcher.end = end;
+    const tmpTrack = structuredClone(track);
+    Object.assign(tmpTrack, { duration, status: "stop" });
+    const tmpTrackers = data.trackers.map((item) =>
+      item.trackerId == track.trackerId ? tmpTrack : item
+    );
+
+    mutate("/api/logtree", { ...data, trackers: tmpTrackers }, false);
     fetcher("/api/tracker/watchers/end", {
       tid: track.trackerId,
       duration,
@@ -22,20 +32,27 @@ export default function Tracker() {
       const tmpTrackers = data.trackers.map((item) =>
         item.trackerId == track.trackerId ? d.tracker : item
       );
-
       mutate("/api/logtree", { ...data, trackers: tmpTrackers }, false);
     });
   };
 
   const handleUpdateWatcherStart = async (track) => {
     // This is for creating a new timer when status is stop
+
+    const tmpTrack = structuredClone(track);
+    tmpTrack.status = "start";
+    const tmpTrackers = data.trackers.map((item) =>
+      item.trackerId == track.trackerId ? tmpTrack : item
+    );
+    mutate("/api/logtree", { ...data, trackers: tmpTrackers }, false);
+
     fetcher("/api/tracker/watchers/continue", {
       tid: track.trackerId,
     }).then((d) => {
       const tmpTrackers = data.trackers.map((item) =>
         item.trackerId == track.trackerId ? d.tracker : item
       );
-      mutate("/api/logtree", { ...data, trackers: tmpTrackers });
+      mutate("/api/logtree", { ...data, trackers: tmpTrackers }, false);
     });
   };
 
@@ -54,22 +71,29 @@ export default function Tracker() {
       },
     ];
     mutate("/api/logtree", { ...data, trackers: tmpTrackers }, false);
-    fetcher("/api/tracker/create", { category, description }).then(() => {
-      mutate("/api/logtree");
+    fetcher("/api/tracker/create", { category, description }).then((d) => {
+      const tmpTrackers = [...data.trackers, d.tracker];
+      mutate("/api/logtree", { ...data, trackers: tmpTrackers }, false);
     });
     event.target.querySelector("[name=description]").value = "";
   };
 
   const handleDeleteTracker = async (trackerId) => {
-    const tmpTrackers = data.trackers.filter(
-      (track) => track.trackerId != trackerId
-    );
-    mutate("/api/logtree", { ...data, trackers: tmpTrackers }, false);
-    fetcher("/api/tracker/delete", { tid: trackerId });
+    // const tmpTrackers = data.trackers.filter(
+    //   (track) => track.trackerId != trackerId
+    // );
+    // mutate("/api/logtree", { ...data, trackers: tmpTrackers }, false);
+
+    fetcher("/api/tracker/delete", { tid: trackerId }).then(() => {
+      const tmpTrackers = data.trackers.filter(
+        (track) => track.trackerId != trackerId
+      );
+      mutate("/api/logtree", { ...data, trackers: tmpTrackers }, false);
+    });
   };
 
   if (isLoading) {
-    return <div> Loading... </div>;
+    return <ShowLoading />;
   }
 
   if (!isLoading && data.error) {
@@ -138,15 +162,21 @@ export default function Tracker() {
                               }`}
                               open
                             >
-                              <summary>
+                              <summary className="">
                                 {track.description}
                                 {track.trackerId && (
                                   <a
                                     className="text-gray-500 px-2 hover:text-rose-400 hover:cursor-pointer"
-                                    onClick={() => {
-                                      confirm(
+                                    onClick={(e) => {
+                                      console.log(e.target);
+                                      let confirmAgain = confirm(
                                         "Are you sure you want to delete this?"
-                                      ) && handleDeleteTracker(track.trackerId);
+                                      );
+                                      if (confirmAgain) {
+                                        e.target.parentElement.className +=
+                                          " text-rose-500 ";
+                                        handleDeleteTracker(track.trackerId);
+                                      }
                                     }}
                                   >
                                     x

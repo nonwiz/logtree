@@ -53,7 +53,7 @@ export default function Noter() {
   };
 
   if (isLoading) {
-    return <div> Loading... </div>;
+    return <ShowLoading />;
   }
 
   if (!isLoading && data.error) {

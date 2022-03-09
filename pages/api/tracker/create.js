@@ -23,6 +23,9 @@ export default async function handler(req, res) {
           create: {},
         },
       },
+      include: {
+        watchers: true,
+      },
     });
     console.log("tracker creation", tracker);
     return res.status(200).json({ tracker });

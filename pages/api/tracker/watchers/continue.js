@@ -14,6 +14,9 @@ export default async function handler(req, res) {
           create: {},
         },
       },
+      include: {
+        watchers: true,
+      },
     });
     res.status(200).json({ tracker: updatedTracker });
   } catch (error) {
