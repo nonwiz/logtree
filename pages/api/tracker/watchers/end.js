@@ -5,12 +5,16 @@ export default async function handler(req, res) {
     return res.status(403).json({ message: "Request forbidden" });
   }
   try {
-    const { tid, duration, wid, end } = req.body;
+    const { tid, duration, start, wid } = req.body;
+    const end = new Date();
+    const tmp = (end - new Date(start)) / 1000;
+    const updatedDuration = Math.floor(Number(duration) + tmp);
+
     const updatedTracker = await prisma.tracker.update({
       where: { trackerId: tid },
       data: {
         status: "stop",
-        duration,
+        duration: updatedDuration,
         watchers: {
           update: {
             where: { wid },

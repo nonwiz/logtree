@@ -105,7 +105,7 @@ export default function Noter() {
               setEdit(!editMode);
             }}
           >
-            {!editMode ? "🖉" : "📖"}
+            {!editMode ? "Edit 🖉" : "Preview 📖"}
           </a>
         </div>
         {categorizeObj(data.categoriesList, data.notes, "notes").map((item) => (

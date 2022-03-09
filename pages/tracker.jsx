@@ -10,24 +10,23 @@ export default function Tracker() {
 
   const handleUpdateWatcherStop = async (track) => {
     // This is for stopping timer, when status is start
-    //
     const lastWatcher = track.watchers.at(-1);
-    const end = new Date();
-    const tmp = (end - new Date(lastWatcher.start)) / 1000;
-    const duration = Math.floor(track.duration + tmp);
-    lastWatcher.end = end;
-    const tmpTrack = structuredClone(track);
-    Object.assign(tmpTrack, { duration, status: "stop" });
-    const tmpTrackers = data.trackers.map((item) =>
-      item.trackerId == track.trackerId ? tmpTrack : item
-    );
+    // const end = new Date();
+    // const tmp = (end - new Date(lastWatcher.start)) / 1000;
+    // const duration = Math.floor(track.duration + tmp);
+    // lastWatcher.end = end;
+    // const tmpTrack = structuredClone(track);
+    // Object.assign(tmpTrack, { duration, status: "stop" });
+    // const tmpTrackers = data.trackers.map((item) =>
+    //   item.trackerId == track.trackerId ? tmpTrack : item
+    // );
 
-    mutate("/api/logtree", { ...data, trackers: tmpTrackers }, false);
+    // mutate("/api/logtree", { ...data, trackers: tmpTrackers }, false);
     fetcher("/api/tracker/watchers/end", {
+      start: lastWatcher.start,
       tid: track.trackerId,
-      duration,
+      duration: track.duration,
       wid: lastWatcher.wid,
-      end,
     }).then((d) => {
       const tmpTrackers = data.trackers.map((item) =>
         item.trackerId == track.trackerId ? d.tracker : item
@@ -39,12 +38,12 @@ export default function Tracker() {
   const handleUpdateWatcherStart = async (track) => {
     // This is for creating a new timer when status is stop
 
-    const tmpTrack = structuredClone(track);
-    tmpTrack.status = "start";
-    const tmpTrackers = data.trackers.map((item) =>
-      item.trackerId == track.trackerId ? tmpTrack : item
-    );
-    mutate("/api/logtree", { ...data, trackers: tmpTrackers }, false);
+    // const tmpTrack = structuredClone(track);
+    // tmpTrack.status = "start";
+    // const tmpTrackers = data.trackers.map((item) =>
+    //   item.trackerId == track.trackerId ? tmpTrack : item
+    // );
+    // mutate("/api/logtree", { ...data, trackers: tmpTrackers }, false);
 
     fetcher("/api/tracker/watchers/continue", {
       tid: track.trackerId,
@@ -138,7 +137,16 @@ export default function Tracker() {
             </form>
           </div>
         </details>
-        
+        <details>
+          <summary> To be implemented </summary>
+          <ul className="list-disc p-2 pl-4 ">
+            <li>
+              {" "}
+              When tracking begin, make the time dynamic or changing every
+              second{" "}
+            </li>
+          </ul>
+        </details>
       </div>
       <div className="w-full p-2">
         <h2>View List of Tracker </h2>
