@@ -92,19 +92,21 @@ export default function Home() {
                   {item.links.length ? (
                     <details open>
                       <summary>Links:</summary>
-                      <div className="p-4">
+                      <ul className="list-disc px-8">
                         {item.links.map((link, id) => (
-                          <a
-                            key={id}
-                            href={link.refer}
-                            className="text-sky-700 hover:underline"
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            {link.label},{" "}
-                          </a>
+                          <li>
+                            <a
+                              key={id}
+                              href={link.refer}
+                              className="text-sky-700 hover:underline"
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              {link.label}{" "}
+                            </a>
+                          </li>
                         ))}
-                      </div>
+                      </ul>
                     </details>
                   ) : (
                     ""

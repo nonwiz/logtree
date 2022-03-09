@@ -39,13 +39,14 @@ function ShowLoading() {
           </div>
         </div>
 
-        <p className="p-2 mt-1 text-center mx-auto w-96 break-all">
-          {quote && quote.quoteText}
-          <br />
-          {quote && (
-            <span className="text-gray-600 mt-1">{`⤷ ${quote.quoteAuthor}`}</span>
-          )}
-        </p>
+        <div className="p-2 text-center mx-auto w-96">
+          <p className="break-all prose-md">{quote && quote.quoteText}</p>
+          <p>
+            {quote && (
+              <span className="text-gray-600 mt-2">{`⤷ ${quote.quoteAuthor}`}</span>
+            )}
+          </p>
+        </div>
       </div>
     </div>
   );
