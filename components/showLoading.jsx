@@ -25,7 +25,7 @@ function ShowLoading() {
 
   return (
     <div className="absolute inset-0 h-screen w-screen">
-      <div className="p-2 sm:mt-[18vh]">
+      <div className="p-2 mt-[10vh] sm:mt-[18vh]">
         <img
           src="/undraw_loading_re_5axr.svg"
           className="w-60 bg-gray-700 rounded-xl mx-auto"

@@ -43,7 +43,7 @@ export default function Home() {
   }
 
   return (
-    <div>
+    <div className="">
       {!isLoading && data.error && <Welcome />}
       {data && data.categories && (
         <div className="flex flex-col">

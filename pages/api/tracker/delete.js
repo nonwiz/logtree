@@ -9,7 +9,7 @@ export default async function handler(req, res) {
   try {
     const { tid } = req.body;
     await prisma.tracker.delete({ where: { trackerId: Number(tid) } });
-    res.status(200).json({ message: "delete successfully" });
+    res.status(200).json({ delete: true, message: "delete successfully" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error });

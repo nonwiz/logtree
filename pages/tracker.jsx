@@ -1,12 +1,20 @@
 import { fetcher, useCategories } from "lib/fetcher";
 import { useSWRConfig } from "swr";
 import { categorizeObj } from "lib/utils";
+import { useState, useEffect } from "react";
 import ShowError from "@/components/showError";
 import ShowLoading from "@/components/showLoading";
 
 export default function Tracker() {
   const { data, isLoading, isError } = useCategories();
+  const [trackers, setTracker] = useState([]);
   const { mutate } = useSWRConfig();
+
+  useEffect(() => {
+    if (data && data.trackers) {
+      setTracker(data.trackers);
+    }
+  }, [data]);
 
   const handleUpdateWatcherStop = async (track) => {
     // This is for stopping timer, when status is start
@@ -60,16 +68,16 @@ export default function Tracker() {
   };
 
   const handleDeleteTracker = async (trackerId) => {
-    // const tmpTrackers = data.trackers.filter(
-    //   (track) => track.trackerId != trackerId
-    // );
+    const tmpTrackers = data.trackers.filter(
+      (track) => track.trackerId != trackerId
+    );
+    setTracker(tmpTrackers);
     // mutate("/api/logtree", { ...data, trackers: tmpTrackers }, false);
 
-    fetcher("/api/tracker/delete", { tid: trackerId }).then(() => {
-      const tmpTrackers = data.trackers.filter(
-        (track) => track.trackerId != trackerId
-      );
-      mutate("/api/logtree", { ...data, trackers: tmpTrackers }, false);
+    fetcher("/api/tracker/delete", { tid: trackerId }).then((d) => {
+      if (d && d.delete == true) {
+        mutate("/api/logtree");
+      }
     });
   };
 
@@ -118,7 +126,7 @@ export default function Tracker() {
                 <input
                   type="submit"
                   value="Create"
-                  className="bg-gray-800 text-gray-50 rounded-md"
+                  className="bg-gray-800 text-gray-50 rounded-md hover:bg-gray-600"
                 />
               </form>
             </div>
@@ -151,7 +159,7 @@ export default function Tracker() {
           <div>
             {data &&
               data.categoriesList &&
-              categorizeObj(data.categoriesList, data.trackers, "trackers").map(
+              categorizeObj(data.categoriesList, trackers, "trackers").map(
                 (item) => (
                   <div key={item.categoryId}>
                     {item.trackers.length ? (
@@ -161,29 +169,30 @@ export default function Tracker() {
                           {item.trackers.map((track, id) => (
                             <details
                               key={id}
+                              data-details={`track-${track.trackerId}`}
                               className={`${
-                                !track.trackerId && "text-gray-600"
+                                !track.trackerId ? "text-gray-600" : ""
                               }`}
                               open
                             >
                               <summary className="">
                                 {track.description}
                                 {track.trackerId && (
-                                  <a
+                                  <button
                                     className="text-gray-500 px-2 hover:text-rose-400 hover:cursor-pointer"
                                     onClick={(e) => {
-                                      let confirmAgain = confirm(
-                                        "Are you sure you want to delete this?"
+                                      const del = e.target.parentElement;
+                                      del.classList.add("text-gray-400");
+                                      handleDeleteTracker(track.trackerId);
+                                      setTimeout(
+                                        () =>
+                                          del.classList.remove("text-gray-400"),
+                                        1000
                                       );
-                                      if (confirmAgain) {
-                                        e.target.parentElement.className +=
-                                          " text-rose-500 ";
-                                        handleDeleteTracker(track.trackerId);
-                                      }
                                     }}
                                   >
                                     x
-                                  </a>
+                                  </button>
                                 )}
                               </summary>
                               <div>

@@ -113,7 +113,18 @@ export const Category = (data) => {
                 maxLength="20"
                 className="bg-gray-200 w-3/4 border border-gray-600 rounded-md p-1 mr-1"
               />
-              <button className="w-1/4 bg-gray-800 text-gray-100 hover:bg-gray-700">
+              <button
+                className="w-1/4 bg-gray-800 text-gray-100 hover:bg-gray-600"
+                onClick={(e) => {
+                  e.target.textContent = "...";
+
+                  e.target.disabled = true;
+                  setTimeout(() => {
+                    e.target.disabled = false;
+                    e.target.textContent = "Add";
+                  }, 2000);
+                }}
+              >
                 Add
               </button>
             </form>

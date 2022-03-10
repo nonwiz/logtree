@@ -1,141 +1,109 @@
+import { useState, useEffect } from "react";
+import HL from "@/components/horizontalLine";
+
 export const Welcome = (data) => {
   return (
-    <div className="flex flex-col sm:flex-row gap-2">
-      <div className="w-auto sm:border-gray-800 sm:border-r-2 p-1 sm:h-screen sm:w-86 md:w-[60vw] lg:w-[40vw]">
-        <details open>
-          <summary>Real summary</summary>
-          <ul className="list-disc px-4 text-gray-600">
-            <li>Topic: let you link and connect to other modules</li>
-            <li>
-              Tracker: allow you to track time without worrying of accidentally
-              close the tab.
-            </li>
-            <li>Links: save any links according to the topic.</li>
-            <li>Notes: store and edit any note associate to topic.</li>
-          </ul>
-        </details>
-        <details>
-          <summary>Topic</summary>
-          <p>
-            One of the core model within Logtree is the topic, in the backend db
-            known as category, which is the association between user and other
-            module like Tracker, Links, Notes, etc...
-          </p>
-        </details>
-        <details>
-          <summary>Tracker</summary>
-          <p>
-            This module allow you to track the time you spent on each certain
-            topic, you can stop / stop / resume the tracking. This is
-            server-side based tracker, which mean you don t have to worry if you
-            accidentally close the tab as long as you have access to the
-            internet and browser, you can open it to continue.
-          </p>
-        </details>
+    <>
+      <div className="rounded-tl-xl rounded-tr-xl bg-gray-800 text-gray-50 py-40 p-4 text-center">
+        <h1> Welcome </h1>
+        <div className="flex justify-center">
+          <HL widths={[20, 20]} color="bg-gray-50" />
+        </div>
 
-        <details>
-          <summary>Links</summary>
-          <p>You can store links according to topic or category.</p>
-        </details>
-
-        <details>
-          <summary>Notes</summary>
-          <p>
-            Like Links, but instead, you can use markdown syntax here, this is
-            instead for storing notes.
-          </p>
-        </details>
+        <p className="text-sm text-gray-50">
+          Tracker | Link Manager | Note Keeper
+        </p>
       </div>
-      <div>
-        <div className="w-full md:w-[60vw] p-2">
-          <details open>
-            <summary> What s this? </summary>
+      <div className="my-16 p-2 flex flex-col">
+        <div className="">
+          <h2> What is logtree </h2>
+          <HL widths={[20, 20]} />
+
+          <p className="mb-4">
+            A progressive platform that aim to improve the user's productivity
+            and fun!
+          </p>
+        </div>
+        <div className=" w-full flex flex-col md:flex-row gap-2 justify-between">
+          <details className="md:w-80 p-2 border-2 border-gray-800" open>
+            <summary> Time Tracking </summary>
             <p>
-              This is logtree, a platform compile a lot of useful productivity
-              applications together in one bundle and learn users use it easely.
+              allow you to track time without worrying of accidentally close the
+              tab.
             </p>
           </details>
-          <details open>
-            <summary> The Inspiration </summary>
-            <p className="break-word">
-              About a year ago or longer, I was fairly new to programming. I was
-              delight when one of my inspiration (Avanier) showed me of what he
-              had made. Many of his applications and program were for improving
-              his own productivity. From then on, I determined that I would try
-              my best to make one to improve myself as well. A lot of things
-              happen later on that I got delay until now.
-            </p>
-            <p>That s it.</p>
+
+          <details className="md:w-80 p-2 border-2 border-gray-800" open>
+            <summary> Links Manager </summary>
+            <p>save any links according to the topic.</p>
           </details>
-          <details>
-            <summary> The Idea </summary>
-            <p>
-              There are many things that constantly bugging me. One of them is
-              about time management, many times that I wonder how much time I
-              have work on this specific project?
-            </p>
-            <p>
-              Two, I want to make a short note using other computers or just
-              simply for copy paste and store it properly.
-            </p>
-            <p>
-              There were variety of useful resources that I really like to
-              explore and I did, I didn t pay much attention for a while, and
-              now my bookmark is super clutter right now. There are many useless
-              stuff that I store and now it also had buried those I have
-              considered imporant.
-            </p>
-            <p>
-              Now this era where I have to worry on security, I also not
-              comfortable constantly login and using two authentication for so
-              many times on different devices. So I just wished that I am able
-              to just login once and yeah the other app follow the same way.
-            </p>
-            <p>
-              Last of all, I also wish that I can keep improving this project
-              and adding more stuff as well whether for fun or learning
-            </p>
-          </details>
-          <details>
-            <summary> The Goal </summary>
-            <p>
-              Upon brainstorming upon this idea, I decide to start working on a
-              tracker first in which I can track my time and category I spent,
-              then make a link storage in which to save and category the links
-              that I saved; and lastly is a short term note.
-            </p>
-          </details>
-          <details>
-            <summary> The Timeframe </summary>
-            <p>
-              {" "}
-              I didn t really set any timeframe for this project, but I wanted
-              to add the functionality that I need at least by the end of March
-              2022.
-            </p>
-          </details>
-          <details>
-            <summary> Credits </summary>
-            <p>
-              I don t know if Miki Szeles would see this page, but yeah I was
-              browsing and found oen of your blog post, I don t know if I like
-              but yeah, but it gaves me some plagiarism idea on how to write
-              this welcome page here, so thank you!{" "}
-            </p>
-          </details>
-          <details>
-            <summary> Framework behind this</summary>
-            <p>This project is made with:</p>
-            <ul className="list-disc px-4 text-gray-600">
-              <li>Hosting: Github + Vercel </li>
-              <li>Database: PlanetScale</li>
-              <li>ORM: Prisma</li>
-              <li>Backend: Nextjs</li>
-              <li>Frontend: TailwindCSS</li>
-            </ul>
+
+          <details className="md:w-80 p-2 border-2 border-gray-800" open>
+            <summary> Notes Keeper </summary>
+            <p>store and edit any note associate to topic</p>
           </details>
         </div>
       </div>
-    </div>
+      <div className="bg-gray-800 text-gray-50 py-10 my-10 p-4 text-center">
+        <h2> Other features? </h2>
+        <div className="flex justify-center">
+          <HL widths={[20, 20]} color="bg-gray-50" />
+        </div>
+
+        <p className="text-sm text-gray-50">
+          More to come, but here is the beta features:
+        </p>
+      </div>
+
+      <div className="p-2">
+        <h2> Keyboard command! </h2>
+        <HL widths={[20, 20]} />
+        <p>
+          {" "}
+          When on wider screen, press [`] to activate the master command. More
+          commands will be added later, here are the currently available
+          commands for use.{" "}
+        </p>
+      </div>
+      <div className="bg-gray-800 h-80 text-gray-50 p-4 rounded-br-xl rounded-bl-xl">
+        {/* Keyboard feature */}
+        <h2> Switch pages: </h2>
+        <span> ⤷ </span>
+        <div className="inline-block" id="command">
+          links
+        </div>
+        <hr />
+        <div>
+          <p className="text-rose-300 text-sm "> Loading links page! </p>
+        </div>
+        <div className="my-1 text-xs text-teal-500">
+          # Press [`] then type the available pages: <br /> # ["home",
+          "tracker", "links", "notes"]
+        </div>
+        <br />
+        <div className="text-right">
+          <h2> Other commands: </h2>
+          <div className="inline-block" id="command">
+            <span> ⤷ </span>
+            ct [topic name]
+          </div>
+          <hr />
+          <div>
+            <p className="text-rose-300 text-sm "> Creating [topic name] </p>
+          </div>
+        </div>
+        <div className="my-1 text-xs text-right text-teal-500">
+          # Ex. ct sideproject # Creating sideproject! <br /># Other commands:
+          login, logout
+        </div>
+      </div>
+
+      <div>
+        <p className="text-yellow-700 p-2">
+          !Note: When running function like create, you will need to reload the
+          page manually, for now :({" "}
+        </p>
+      </div>
+    </>
   );
 };
