@@ -34,9 +34,9 @@ export default function Home() {
     }
   }, []);
 
-  //   if (isLoading) {
-  //     return <ShowLoading />;
-  //   }
+  if (isLoading) {
+    return <ShowLoading />;
+  }
 
   if (!data) {
     return <Welcome />;
