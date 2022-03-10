@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCategories } from "lib/fetcher";
 
-function signin({ providers }) {
+function Signin({ providers }) {
   const { data, isLoading } = useCategories();
   const router = useRouter();
 
@@ -53,7 +53,7 @@ function signin({ providers }) {
   );
 }
 
-export default signin;
+export default Signin;
 
 export async function getServerSideProps(context) {
   const providers = await getProviders();
