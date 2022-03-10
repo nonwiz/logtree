@@ -14,7 +14,7 @@ function Signin({ providers }) {
           </div>
           <div className="p-2 text-gray-50">
             <img src="/logo.png" className="w-20 rounded-md invert mx-auto" />
-            <h1 className="text-center"> Login </h1>
+            <h1 className="text-center"> Signin </h1>
             <hr className="my-2" />
             {Object.values(providers).map((provider) => {
               return (

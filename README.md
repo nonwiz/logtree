@@ -82,4 +82,4 @@ This project is made with:
 - 07-03-2022: none
 - 08-03-2022: updating APi to use SWR
 - 09-03-2022: added show loading / error 
-- 10-03-2022: adding mutate to category, and updating ui state adn requirement, transition, update index page
+- 10-03-2022: adding mutate to category, and updating ui state adn requirement, transition, update index page.
