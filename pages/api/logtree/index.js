@@ -3,8 +3,11 @@ import { prisma } from "@/auth";
 
 export default async function handler(req, res) {
   const session = await getSession({ req });
-  if (session && !session.user.email) {
-    return res.status(403).json({ login: false });
+  console.log({ session });
+  if (!session || !session.user.email) {
+    return res
+      .status(200)
+      .json({ login: false, error: { message: "not logged in" } });
   }
   try {
     const user = await prisma.user.findUnique({
@@ -37,6 +40,7 @@ export default async function handler(req, res) {
     );
 
     data["categories"] = user.categories;
+    data["login"] = true;
     data["categoriesList"] = user.categories.map((cate) => ({
       categoryId: cate.categoryId,
       label: cate.label,
@@ -45,6 +49,6 @@ export default async function handler(req, res) {
     res.status(200).json(data);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error });
+    res.status(200).json({ error });
   }
 }

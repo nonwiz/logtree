@@ -34,30 +34,39 @@ export default function Home() {
     }
   }, []);
 
-  if (isLoading) {
-    return <ShowLoading />;
+  //   if (isLoading) {
+  //     return <ShowLoading />;
+  //   }
+
+  if (!data) {
+    return <Welcome />;
   }
+
   return (
     <div>
       {!isLoading && data.error && <Welcome />}
       {data && data.categories && (
-        <div className="flex flex-col sm:flex-row gap-2">
-          <div className="w-auto sm:border-gray-800 sm:border-r-2 p-1 sm:h-screen sm:w-86 md:w-[60vw] lg:w-[40vw]">
-            {/* THis is the first column */}
-            {data.categories && <Category data={data.categories} />}
-            <details open>
-              <summary> Inspiration </summary>
-              <div className="p-2 bg-gray-300 text-gray-600 m-2 min-h-fit ">
-                {quote && (
-                  <div>
-                    {quote.quoteText} <br />{" "}
-                    <div className="text-right">- {quote.quoteAuthor}</div>
-                  </div>
-                )}
-              </div>
-            </details>
+        <div className="flex flex-col">
+          <div className="w-auto sm:w-80 sm:fixed w-auto z-10 left-0 top-0 overflow-hidden my-4 sm:mt-20">
+            <div className="p-2 border border-gray-800 rounded-md">
+              {data.categories && <Category data={data.categories} />}
+            </div>
+
+            <div className="border border-gray-800 mt-2 rounded-md p-2">
+              <details open>
+                <summary> Inspiration </summary>
+                <div className="p-2 bg-gray-300 text-gray-600 m-2 min-h-fit ">
+                  {quote && (
+                    <div>
+                      {quote.quoteText} <br />{" "}
+                      <div className="text-right">- {quote.quoteAuthor}</div>
+                    </div>
+                  )}
+                </div>
+              </details>
+            </div>
           </div>
-          <div className="w-full p-2">
+          <div className="sm:ml-80 w-auto p-2 h-full">
             {/* This is the second column or the right column when width-sm */}
             <h2>Recent Tree </h2>
             {!data.categories.length && <p>Empty...</p>}

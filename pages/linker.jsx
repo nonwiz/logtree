@@ -56,57 +56,61 @@ export default function Linker() {
   }
 
   return (
-    <div className="flex flex-col sm:flex-row gap-2">
-      <div className="w-auto sm:border-gray-800 sm:border-r-2 p-1 sm:h-screen sm:w-86 md:w-[60vw] lg:w-[40vw]">
-        <details open>
-          <summary>Manage Topic</summary>
-          <div className="p-1 border border-gray-600 rounded-md pt-4 m-1">
-            <form className="flex flex-col gap-2" onSubmit={handleCreateLink}>
-              <select name="category">
-                {data &&
-                  data.categories.map((item, id) => (
-                    <option key={id} value={item.categoryId}>
-                      {item.label}
-                    </option>
-                  ))}
-              </select>
-              <input
-                type="url"
-                name="refer"
-                className="bg-gray-200 rounded-md p-1 mr-1"
-                placeholder="Put your link here..."
-                required
-              />
-
-              <hr className="border-gray-800 mt-2" />
-              <div className="flex flex-row px-1 py-1">
+    <div className="flex flex-col">
+      <div className="w-auto sm:w-80 sm:fixed w-auto z-10 left-0 top-0 overflow-hidden my-4 sm:mt-20">
+        <div className="p-2 border border-gray-800 rounded-md">
+          <details open>
+            <summary>Manage Topic</summary>
+            <div className="p-1 border border-gray-600 rounded-md pt-4 m-1">
+              <form className="flex flex-col gap-2" onSubmit={handleCreateLink}>
+                <select name="category">
+                  {data &&
+                    data.categories.map((item, id) => (
+                      <option key={id} value={item.categoryId}>
+                        {item.label}
+                      </option>
+                    ))}
+                </select>
                 <input
-                  className="bg-gray-200 w-3/4 border border-gray-600 rounded-md p-1 mr-1"
-                  type="text"
-                  name="label"
-                  placeholder="Label"
+                  type="url"
+                  name="refer"
+                  className="bg-gray-200 rounded-md p-1 mr-1"
+                  placeholder="Put your link here..."
                   required
-                  minLength="3"
-                  maxLength="50"
                 />
 
-                <button className="w-1/4 bg-gray-800 text-gray-100 hover:bg-gray-700">
-                  Add
-                </button>
-              </div>
-            </form>
-          </div>
-        </details>
-        <details>
-          <summary>To be added</summary>
-          <ul className="px-4 list-disc text-gray-600">
-            <li> Add filtering and automatic sorting </li>
-            <li> Check for existing link </li>
-          </ul>
-        </details>
-      </div>
+                <hr className="border-gray-800 mt-2" />
+                <div className="flex flex-row px-1 py-1">
+                  <input
+                    className="bg-gray-200 w-3/4 border border-gray-600 rounded-md p-1 mr-1"
+                    type="text"
+                    name="label"
+                    placeholder="Label"
+                    required
+                    minLength="3"
+                    maxLength="50"
+                  />
 
-      <div className="w-full p-2">
+                  <button className="w-1/4 bg-gray-800 text-gray-100 hover:bg-gray-700">
+                    Add
+                  </button>
+                </div>
+              </form>
+            </div>
+          </details>
+        </div>
+
+        <div className="p-2 border border-gray-800 rounded-md mt-2">
+          <details>
+            <summary>To be added</summary>
+            <ul className="px-4 list-disc text-gray-600">
+              <li> Add filtering and automatic sorting </li>
+              <li> Check for existing link </li>
+            </ul>
+          </details>
+        </div>
+      </div>
+      <div className="sm:ml-80 w-auto p-2 h-full">
         <h2>View List of Link </h2>
         <hr />
         {!linkLen && <p>You have not add any link yet.</p>}

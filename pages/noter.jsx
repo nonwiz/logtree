@@ -64,37 +64,38 @@ export default function Noter() {
   }
 
   return (
-    <div className="flex flex-col sm:flex-row gap-2">
-      <div className="w-auto sm:border-gray-800 sm:border-r-2 p-1 sm:h-screen sm:w-86 md:w-[60vw] lg:w-[40vw]">
-        <details open>
-          <summary>Create Note</summary>
-          <div className="p-1 border border-gray-600 rounded-md pt-4 m-1">
-            <form className="flex flex-col gap-2" onSubmit={handleCreateNote}>
-              <select name="category" required>
-                {data.categoriesList.map((item, id) => (
-                  <option key={id} value={item.categoryId}>
-                    {item.label}
-                  </option>
-                ))}
-              </select>
-              <textarea
-                name="description"
-                placeholder="Write down your note here..."
-                rows="5"
-                required
-                minLength="5"
-              />
+    <div className="flex flex-col">
+      <div className="w-auto sm:w-80 sm:fixed w-auto z-10 left-0 top-0 overflow-hidden my-4 sm:mt-20">
+        <div className="p-2 border border-gray-800 rounded-md">
+          <details open>
+            <summary>Create Note</summary>
+            <div className="p-1 border border-gray-600 rounded-md pt-4 m-1">
+              <form className="flex flex-col gap-2" onSubmit={handleCreateNote}>
+                <select name="category" required>
+                  {data.categoriesList.map((item, id) => (
+                    <option key={id} value={item.categoryId}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+                <textarea
+                  name="description"
+                  placeholder="Write down your note here..."
+                  rows="5"
+                  required
+                  minLength="5"
+                />
 
-              <hr className="border-gray-800 mt-2" />
-              <button className="w-full bg-gray-800 text-gray-100 hover:bg-gray-700">
-                Pin Note
-              </button>
-            </form>
-          </div>
-        </details>
+                <hr className="border-gray-800 mt-2" />
+                <button className="w-full bg-gray-800 text-gray-100 hover:bg-gray-700">
+                  Pin Note
+                </button>
+              </form>
+            </div>
+          </details>
+        </div>
       </div>
-
-      <div className="w-full p-2">
+      <div className="sm:ml-80 w-auto p-2 h-full">
         <div className="flex flex-row justify-between">
           <h2>View List of Note </h2>
           <a
@@ -125,6 +126,7 @@ export default function Noter() {
                             <textarea
                               id={`note-${note.nid}`}
                               className="w-full bg-gray-300"
+                              rows="5"
                               onChange={(e) => {
                                 const height = e.target.scrollHeight;
                               }}

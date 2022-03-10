@@ -98,62 +98,63 @@ function Header() {
         <meta property="twitter:card" content="/media_card.png" />
         <meta property="twitter:image" content="/media_card.png" />
       </Head>
-      <div className="p-2 flex flex-wrap justify-between border border-b-gray-300">
-        <div>
-          {" "}
-          <span className="bg-gray-800 text-gray-100 p-1 rounded-md">
-            <Link href="/">LOGTREE</Link>
-          </span>
-          <span>:-</span>
-          <span className="space-x-2">
-            <select
-              name="menu"
-              id="menu"
-              onChange={(e) => router.push(e.target.value)}
-            >
-              {links.map((item, id) => (
-                <option value={item.link} key={id}>
-                  {item.label}
-                </option>
-              ))}
-            </select>
-          </span>
-        </div>
-        <div className="flex flex-row gap-2">
-          <div className="hidden sm:block">
-            <input
-              list="commands"
-              id="master"
-              onKeyPress={runCommand}
-              placeholder="Press [`]"
-              className="bg-gray-300 p-1 rounded-md text-gray-600 w-60"
-            />
-            <datalist id="commands">
-              {Object.keys(commands).map((commandKey, id) => (
-                <option key={id}>{commandKey}</option>
-              ))}
-            </datalist>
+      <div className="fixed top-0 w-screen bg-gray-200 z-20 pr-1 sm:pr-4">
+        <div className="p-2 flex flex-wrap justify-between border border-b-gray-300">
+          <div>
+            <span className="bg-gray-800 text-gray-100 p-1 rounded-md">
+              <Link href="/">LOGTREE</Link>
+            </span>
+            <span>:-</span>
+            <span className="space-x-2">
+              <select
+                name="menu"
+                id="menu"
+                onChange={(e) => router.push(e.target.value)}
+              >
+                {links.map((item, id) => (
+                  <option value={item.link} key={id}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+            </span>
           </div>
-          {session?.user?.image && (
-            <img
-              src={session.user.image}
-              className="w-8 h-8 rounded-full border border-gray-400"
-              layout="fill"
-            />
-          )}
+          <div className="flex flex-row gap-2">
+            <div className="hidden sm:block">
+              <input
+                list="commands"
+                id="master"
+                onKeyPress={runCommand}
+                placeholder="Press [`]"
+                className="bg-gray-300 p-1 rounded-md text-gray-600 w-60"
+              />
+              <datalist id="commands">
+                {Object.keys(commands).map((commandKey, id) => (
+                  <option key={id}>{commandKey}</option>
+                ))}
+              </datalist>
+            </div>
+            {session?.user?.image && (
+              <img
+                src={session.user.image}
+                className="w-8 h-8 rounded-full border border-gray-400"
+                layout="fill"
+              />
+            )}
 
-          {!session ? (
-            <Link href="/signin">
-              <button className="text-gray-600"> Sign in </button>
-            </Link>
-          ) : (
-            <button
-              onClick={() => signOut()}
-              className="bg-rose-500 text-red-50"
-            >
-              Logout
-            </button>
-          )}
+            {!session ? (
+              <Link href="/signin">
+                <button className="text-gray-600"> Sign in </button>
+              </Link>
+            ) : (
+              <button
+                onClick={() => signOut()}
+                className="bg-rose-500 text-red-50"
+              >
+                Logout
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </>

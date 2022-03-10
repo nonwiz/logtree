@@ -11,17 +11,6 @@ export default function Tracker() {
   const handleUpdateWatcherStop = async (track) => {
     // This is for stopping timer, when status is start
     const lastWatcher = track.watchers.at(-1);
-    // const end = new Date();
-    // const tmp = (end - new Date(lastWatcher.start)) / 1000;
-    // const duration = Math.floor(track.duration + tmp);
-    // lastWatcher.end = end;
-    // const tmpTrack = structuredClone(track);
-    // Object.assign(tmpTrack, { duration, status: "stop" });
-    // const tmpTrackers = data.trackers.map((item) =>
-    //   item.trackerId == track.trackerId ? tmpTrack : item
-    // );
-
-    // mutate("/api/logtree", { ...data, trackers: tmpTrackers }, false);
     fetcher("/api/tracker/watchers/end", {
       start: lastWatcher.start,
       tid: track.trackerId,
@@ -37,13 +26,6 @@ export default function Tracker() {
 
   const handleUpdateWatcherStart = async (track) => {
     // This is for creating a new timer when status is stop
-
-    // const tmpTrack = structuredClone(track);
-    // tmpTrack.status = "start";
-    // const tmpTrackers = data.trackers.map((item) =>
-    //   item.trackerId == track.trackerId ? tmpTrack : item
-    // );
-    // mutate("/api/logtree", { ...data, trackers: tmpTrackers }, false);
 
     fetcher("/api/tracker/watchers/continue", {
       tid: track.trackerId,
@@ -105,60 +87,64 @@ export default function Tracker() {
   }
 
   return (
-    <div className="flex flex-col sm:flex-row gap-2">
-      <div className="w-auto sm:border-gray-800 sm:border-r-2 p-1 sm:h-screen sm:w-86 md:w-[60vw] lg:w-[40vw]">
-        <details open>
-          <summary>Create Tracker </summary>
+    <div className="flex flex-col">
+      <div className="w-auto sm:w-80 sm:fixed w-auto z-10 left-0 top-0 overflow-hidden my-4 sm:mt-20">
+        <div className="p-2 border border-gray-800 rounded-md">
+          <details open>
+            <summary>Create Tracker </summary>
 
-          <div className="border border-gray-800 m-1 p-2 rounded-md">
-            <form
-              className="flex flex-col gap-2"
-              onSubmit={handleCreateTracker}
-            >
-              <select name="selectCategory" required>
-                {data &&
-                  data.categoriesList &&
-                  data.categoriesList.map((item, id) => (
-                    <option key={id} value={item.categoryId}>
-                      {item.label}
-                    </option>
-                  ))}
-              </select>
-              <textarea
-                name="description"
-                placeholder="Describe something about this tracker..."
-                required
-                minLength="4"
-                maxLength="50"
-              />
+            <div className="border border-gray-800 m-1 p-2 rounded-md">
+              <form
+                className="flex flex-col gap-2"
+                onSubmit={handleCreateTracker}
+              >
+                <select name="selectCategory" required>
+                  {data &&
+                    data.categoriesList &&
+                    data.categoriesList.map((item, id) => (
+                      <option key={id} value={item.categoryId}>
+                        {item.label}
+                      </option>
+                    ))}
+                </select>
+                <textarea
+                  name="description"
+                  placeholder="Describe something about this tracker..."
+                  required
+                  minLength="4"
+                  maxLength="50"
+                />
 
-              <input
-                type="submit"
-                value="Create"
-                className="bg-gray-800 text-gray-50 rounded-md"
-              />
-            </form>
-          </div>
-        </details>
-        <details>
-          <summary> Current Issues / Bugs </summary>
+                <input
+                  type="submit"
+                  value="Create"
+                  className="bg-gray-800 text-gray-50 rounded-md"
+                />
+              </form>
+            </div>
+          </details>
+        </div>
+        <div className="p-2 border border-gray-800 rounded-md mt-2">
+          <details>
+            <summary> Current Issues / Bugs </summary>
 
-          <ul className="list-disc p-2 pl-4 ">
-            <li>Resume / stop counter is quite slow.</li>
-          </ul>
-        </details>
-        <details>
-          <summary> To be implemented </summary>
-          <ul className="list-disc p-2 pl-4 ">
-            <li>
-              {" "}
-              When tracking begin, make the time dynamic or changing every
-              second{" "}
-            </li>
-          </ul>
-        </details>
+            <ul className="list-disc p-2 pl-4 ">
+              <li>Resume / stop counter is quite slow.</li>
+            </ul>
+          </details>
+          <details>
+            <summary> To be implemented </summary>
+            <ul className="list-disc p-2 pl-4 ">
+              <li>
+                {" "}
+                When tracking begin, make the time dynamic or changing every
+                second{" "}
+              </li>
+            </ul>
+          </details>
+        </div>
       </div>
-      <div className="w-full p-2">
+      <div className="sm:ml-80 w-auto p-2 h-full">
         <h2>View List of Tracker </h2>
 
         <div className="p-1 space-x-1 gap-1">
