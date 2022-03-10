@@ -45,7 +45,9 @@ function ShowLoading() {
           <p className="break-word prose-md">{quote && quote.quoteText}</p>
           <p>
             {quote && (
-              <span className="text-gray-600 mt-2">{`⤷ ${quote.quoteAuthor}`}</span>
+              <span className="text-gray-600 mt-2">{`⤷ ${
+                quote.quoteAuthor ? quote.quoteAuthor : "unknown"
+              }`}</span>
             )}
           </p>
         </div>

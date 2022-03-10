@@ -7,7 +7,7 @@ import ReactMarkdown from "react-markdown";
 import ShowLoading from "@/components/showLoading";
 // import useSWR from "swr";
 
-export default function Home() {
+export default function Home({ updated }) {
   const { data, isLoading } = useCategories();
   const quotesUrl =
     "https://raw.githubusercontent.com/JamesFT/Database-Quotes-JSON/master/quotes.json";
@@ -44,6 +44,7 @@ export default function Home() {
 
   return (
     <div className="">
+      <p className="fixed bottom-0 right-0 opacity-50">{updated}</p>
       {!isLoading && data.error && <Welcome />}
       {data && data.categories && (
         <div className="flex flex-col">
@@ -132,4 +133,14 @@ export default function Home() {
       )}
     </div>
   );
+}
+
+export async function getStaticProps(context) {
+  const bd = new Date();
+  const exportDate = `${bd.getMonth()}-${bd.getDay()}-${bd.toLocaleTimeString()}`;
+  return {
+    props: {
+      updated: exportDate,
+    },
+  };
 }
