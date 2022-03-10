@@ -148,8 +148,11 @@ function Header() {
               </Link>
             ) : (
               <button
-                onClick={() => signOut()}
-                className="bg-rose-500 text-red-50"
+                onClick={() => {
+                  signOut();
+                  mutate("/api/logtree");
+                }}
+                className="bg-rose-500 text-red-50 hover:bg-rose-400"
               >
                 Logout
               </button>
