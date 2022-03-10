@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { fetcher } from "lib/fetcher";
 import { useState, useEffect } from "react";
 
 function ShowLoading() {

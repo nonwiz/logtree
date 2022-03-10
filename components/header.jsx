@@ -6,7 +6,13 @@ import Head from "next/head";
 import { useSWRConfig } from "swr";
 
 const getLabel = (objArr, link) => {
-  return objArr.filter((item) => item.link == link)[0].label;
+  let label;
+  try {
+    label = objArr.filter((item) => item.link == link)[0].label;
+  } catch (err) {
+    label = link.substr(1);
+  }
+  return label;
 };
 
 function Header() {
@@ -23,6 +29,9 @@ function Header() {
     // { label: "URL Master", link: "/" },
     { label: "HF-AI", link: "/huggingface" },
   ];
+  if (!session) {
+    links.push({ label: "Login", link: "/login" });
+  }
 
   const commands = {
     tracker: { fx: "open", link: "/tracker" },
@@ -32,7 +41,7 @@ function Header() {
     links: { fx: "open", link: "/linker" },
     linker: { fx: "open", link: "/linker" },
     index: { fx: "open", link: "/" },
-    login: { fx: "open", link: "/api/auth/signin" },
+    login: { fx: "open", link: "/signin" },
     logout: {
       fx: "run",
       runFx: function () {
@@ -134,7 +143,7 @@ function Header() {
           )}
 
           {!session ? (
-            <Link href="/api/auth/signin">
+            <Link href="/signin">
               <button className="text-gray-600"> Sign in </button>
             </Link>
           ) : (
