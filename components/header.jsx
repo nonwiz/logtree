@@ -32,7 +32,7 @@ function Header() {
     { label: "HF-AI", link: "/huggingface" },
   ];
   if (!session) {
-    links.push({ label: "Login", link: "/login" });
+    links.push({ label: "Login", link: "/signin" });
   }
 
   const commands = {
