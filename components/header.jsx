@@ -35,6 +35,8 @@ function Header() {
     links.push({ label: "Login", link: "/signin" });
   }
 
+  console.log(enterPress);
+
   const commands = {
     tracker: { fx: "open", link: "/tracker" },
     notes: { fx: "open", link: "/noter" },
@@ -74,7 +76,10 @@ function Header() {
       } else if (commands[operation].fx == "runM") {
         commands[operation].runFx(splitMaster);
         master.value = "Loading...";
-        setTimeout(() => (master.value = ""), 1000);
+        setTimeout(() => {
+          master.value = "";
+          setEnter(false);
+        }, 1000);
       }
     }
   };
@@ -92,7 +97,7 @@ function Header() {
       if (e.keyCode == "192") {
         master.value = "";
         master.focus();
-      } else if (e.keyCode == "13") {
+      } else if (e.keyCode == "13" && enterPress) {
         if (master.value.length > 2) {
           runCommand();
           console.log("run command");
@@ -148,6 +153,9 @@ function Header() {
                 id="master"
                 placeholder="Press [`]"
                 className="bg-gray-300 p-1 rounded-md text-gray-600 w-60"
+                onChange={() => {
+                  setEnter(true);
+                }}
               />
               <datalist id="commands">
                 {Object.keys(commands).map((commandKey, id) => (

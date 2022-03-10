@@ -22,11 +22,16 @@ export const Category = (data) => {
   };
 
   const handleCreateCategory = async (label) => {
-    console.log("calling create topic");
-    fetcher("/api/tracker/category/create", { label }).then((d) => {
-      mutate("/api/logtree");
-      setCategories([...categories, d.category]);
-    });
+    if (label.length < 4) {
+      console.log("invalid label");
+      alert("Invalid label");
+    } else {
+      console.log("calling create topic");
+      fetcher("/api/tracker/category/create", { label }).then((d) => {
+        mutate("/api/logtree");
+        setCategories([...categories, d.category]);
+      });
+    }
   };
 
   return (
@@ -98,10 +103,7 @@ export const Category = (data) => {
           )}
 
           {!deleteStart && (
-            <form
-              className="flex py-2 px-1 flex-row"
-              onSubmit={handleCreateCategory}
-            >
+            <div className="flex py-2 px-1 flex-row">
               <input
                 type="text"
                 name="label"
@@ -127,7 +129,7 @@ export const Category = (data) => {
               >
                 Add
               </button>
-            </form>
+            </div>
           )}
         </div>
       </details>
