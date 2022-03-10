@@ -2,17 +2,14 @@ import { getProviders, signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCategories } from "lib/fetcher";
-import { useEffect } from "react";
 
 function signin({ providers }) {
-  const { data } = useCategories();
+  const { data, isLoading } = useCategories();
   const router = useRouter();
 
-  useEffect(() => {
-    if (data && data.login) {
-      router.push("/");
-    }
-  }, [data]);
+  if (!isLoading && data && data.login) {
+    router.push("/");
+  }
 
   return (
     <div className="absolute inset-0 h-screen w-screen bg-gray-800 overflow-hidden">
