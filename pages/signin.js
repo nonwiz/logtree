@@ -50,11 +50,12 @@ export async function getServerSideProps(context) {
   const { req, res } = context;
   const session = await getSession({ req });
   if (session && res) {
-    res.writeHead(302, {
-      Location: "/",
-    });
-    res.end();
-    return;
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
   }
 
   const providers = await getProviders();

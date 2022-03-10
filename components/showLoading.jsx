@@ -30,16 +30,18 @@ function ShowLoading() {
           src="/undraw_loading_re_5axr.svg"
           className="w-60 bg-gray-700 rounded-xl mx-auto"
         />
-        <div className="flex justify-center items-center mt-1">
+        <div className="flex justify-center items-center mt-4">
           <div
-            className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full"
+            className="spinner-border inline-block w-8 h-8 border-4 rounded-full"
             role="status"
           >
-            <span className="visually-hidden text-xs">...</span>
+            <span className="visually-hidden text-xs">
+              <i className="gg-loadbar-alt"></i>
+            </span>
           </div>
         </div>
 
-        <div className="p-2 text-center mx-auto w-96">
+        <div className="p-1 text-center mx-auto w-96">
           <p className="break-word prose-md">{quote && quote.quoteText}</p>
           <p>
             {quote && (
