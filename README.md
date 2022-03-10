@@ -63,6 +63,15 @@ This project is made with:
 - Backend: Nextjs, NextAuth, SWR
 - Frontend: TailwindCSS
 
+## Learn
+
+- SWR is faster than ServerSideRendering
+- Form -onSubmit works on firefox, but it might not work on Chrome [Might be because of beta version]
+- Run query in one go, not many queries for ORM, else it'll be slow as snail.
+- Dont use single quote on nextjs jsx, else ure doom.
+-
+
+
 ## Log
 
 - 02-03-2022: update the dashboard
