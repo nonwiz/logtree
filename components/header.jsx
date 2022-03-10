@@ -47,9 +47,9 @@ function Header() {
     ct: {
       fx: "runM",
       runFx: function (temp) {
-        console.log(temp);
         if (temp.length == 2 && temp[1].length > 5) {
-          createTopic(temp[1]);
+          const tmp = createTopic(temp[1]);
+          console.log(tmp);
         }
       },
     },

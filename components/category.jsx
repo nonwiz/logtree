@@ -21,14 +21,12 @@ export const Category = (data) => {
     setDelete(false);
   };
 
-  const handleCreateCategory = async (event) => {
-    event.preventDefault();
-    const label = event.target.querySelector("[name=label]").value;
+  const handleCreateCategory = async (label) => {
+    console.log("calling create topic");
     fetcher("/api/tracker/category/create", { label }).then((d) => {
       mutate("/api/logtree");
       setCategories([...categories, d.category]);
     });
-    event.target.reset();
   };
 
   return (
@@ -116,10 +114,12 @@ export const Category = (data) => {
               <button
                 className="w-1/4 bg-gray-800 text-gray-100 hover:bg-gray-600"
                 onClick={(e) => {
+                  const label = document.querySelector("[name=label]");
+                  handleCreateCategory(label.value);
                   e.target.textContent = "...";
-
                   e.target.disabled = true;
                   setTimeout(() => {
+                    label.value = "";
                     e.target.disabled = false;
                     e.target.textContent = "Add";
                   }, 2000);

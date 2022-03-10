@@ -3,7 +3,6 @@ import { prisma } from "@/auth";
 
 export default async function handler(req, res) {
   const session = await getSession({ req });
-  console.log({ session });
   if (!session || !session.user.email) {
     return res
       .status(200)
