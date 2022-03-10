@@ -2,7 +2,6 @@ export const Welcome = (data) => {
   return (
     <div className="flex flex-col sm:flex-row gap-2">
       <div className="w-auto sm:border-gray-800 sm:border-r-2 p-1 sm:h-screen sm:w-86 md:w-[60vw] lg:w-[40vw]">
-        <h1> Logtree s Index </h1>
         <details open>
           <summary>Real summary</summary>
           <ul className="list-disc px-4 text-gray-600">

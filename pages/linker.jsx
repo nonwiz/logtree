@@ -75,6 +75,7 @@ export default function Linker() {
                 name="refer"
                 className="bg-gray-200 rounded-md p-1 mr-1"
                 placeholder="Put your link here..."
+                required
               />
 
               <hr className="border-gray-800 mt-2" />
@@ -84,6 +85,9 @@ export default function Linker() {
                   type="text"
                   name="label"
                   placeholder="Label"
+                  required
+                  minLength="3"
+                  maxLength="50"
                 />
 
                 <button className="w-1/4 bg-gray-800 text-gray-100 hover:bg-gray-700">

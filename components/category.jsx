@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { fetcher } from "lib/fetcher";
+import { useSWRConfig } from "swr";
 
 export const Category = (data) => {
+  const { mutate } = useSWRConfig();
+
   const { data: categoriesList } = data;
   const [categories, setCategories] = useState(categoriesList);
   const [deleteStart, setDelete] = useState(false);
@@ -9,7 +12,9 @@ export const Category = (data) => {
 
   const handleDeleteCategories = async (event) => {
     event.preventDefault();
-    fetcher("/api/tracker/category/delete", { deleteList });
+    fetcher("/api/tracker/category/delete", { deleteList }).then(() => {
+      mutate("/api/logtree");
+    });
     setCategories(
       categories.filter((item) => !(deleteList.indexOf(item.categoryId) > -1))
     );
@@ -20,6 +25,7 @@ export const Category = (data) => {
     event.preventDefault();
     const label = event.target.querySelector("[name=label]").value;
     fetcher("/api/tracker/category/create", { label }).then((d) => {
+      mutate("/api/logtree");
       setCategories([...categories, d.category]);
     });
     event.target.reset();
@@ -102,6 +108,9 @@ export const Category = (data) => {
                 type="text"
                 name="label"
                 placeholder="Topic"
+                required
+                minLength="4"
+                maxLength="20"
                 className="bg-gray-200 w-3/4 border border-gray-600 rounded-md p-1 mr-1"
               />
               <button className="w-1/4 bg-gray-800 text-gray-100 hover:bg-gray-700">

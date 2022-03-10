@@ -27,8 +27,6 @@ export default function Noter() {
   const handleUpdateNote = async (note) => {
     const description = document.getElementById(`note-${note.nid}`);
     if (note.description != description.value) {
-      // console.log(note, description.value);
-
       note.description = description.value;
       const tmpNotes = data.notes.map((noteItem) =>
         noteItem.nid == note.nid ? note : noteItem
@@ -65,8 +63,6 @@ export default function Noter() {
     );
   }
 
-  console.log(data, categorizeObj(data.categoriesList, data.notes, "notes"));
-
   return (
     <div className="flex flex-col sm:flex-row gap-2">
       <div className="w-auto sm:border-gray-800 sm:border-r-2 p-1 sm:h-screen sm:w-86 md:w-[60vw] lg:w-[40vw]">
@@ -74,7 +70,7 @@ export default function Noter() {
           <summary>Create Note</summary>
           <div className="p-1 border border-gray-600 rounded-md pt-4 m-1">
             <form className="flex flex-col gap-2" onSubmit={handleCreateNote}>
-              <select name="category">
+              <select name="category" required>
                 {data.categoriesList.map((item, id) => (
                   <option key={id} value={item.categoryId}>
                     {item.label}
@@ -85,6 +81,8 @@ export default function Noter() {
                 name="description"
                 placeholder="Write down your note here..."
                 rows="5"
+                required
+                minLength="5"
               />
 
               <hr className="border-gray-800 mt-2" />

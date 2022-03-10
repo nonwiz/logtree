@@ -1,7 +1,6 @@
-import Head from "next/head";
 import { useState, useEffect } from "react";
 import { Category } from "@/components/category";
-import { useCategories, getFetcher, fetcher } from "lib/fetcher";
+import { useCategories, fetcher } from "lib/fetcher";
 import { Welcome } from "@/components/welcome";
 import ReactMarkdown from "react-markdown";
 
@@ -9,8 +8,7 @@ import ShowLoading from "@/components/showLoading";
 // import useSWR from "swr";
 
 export default function Home() {
-  const { data, isLoading, isError } = useCategories();
-  console.log(data, isLoading, isError);
+  const { data, isLoading } = useCategories();
   const quotesUrl =
     "https://raw.githubusercontent.com/JamesFT/Database-Quotes-JSON/master/quotes.json";
   try {
@@ -41,14 +39,6 @@ export default function Home() {
   }
   return (
     <div>
-      <Head>
-        <title>Logtree | by Nonwiz</title>
-        <meta
-          name="description"
-          content="A small application created to improve users productivity."
-        />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
       {!isLoading && data.error && <Welcome />}
       {data && data.categories && (
         <div className="flex flex-col sm:flex-row gap-2">

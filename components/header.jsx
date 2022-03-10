@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
+import Head from "next/head";
 import { useSWRConfig } from "swr";
 
 const getLabel = (objArr, link) => {
@@ -61,7 +62,6 @@ function Header() {
     setTimeout(() => {
       menu.value = route;
     }, 500);
-    // console.log(menu, label, links);
     const handleKeyUp = (e) => {
       const master = document.querySelector("#master");
       if (e.keyCode == "192") {
@@ -77,6 +77,18 @@ function Header() {
 
   return (
     <>
+      <Head>
+        <meta name="title" content="Logtree | Apps" />
+        <meta
+          name="description"
+          content="This is logtree, a platform compile a lot of useful productivity applications together in one bundle and learn users use it easely."
+        />
+
+        <link rel="icon" href="/logo.png" />
+        <meta property="og:image" content="/media_card.png" />
+        <meta property="twitter:card" content="/media_card.png" />
+        <meta property="twitter:image" content="/media_card.png" />
+      </Head>
       <div className="p-2 flex flex-wrap justify-between border border-b-gray-300">
         <div>
           {" "}

@@ -115,7 +115,7 @@ export default function Tracker() {
               className="flex flex-col gap-2"
               onSubmit={handleCreateTracker}
             >
-              <select name="selectCategory">
+              <select name="selectCategory" required>
                 {data &&
                   data.categoriesList &&
                   data.categoriesList.map((item, id) => (
@@ -127,6 +127,9 @@ export default function Tracker() {
               <textarea
                 name="description"
                 placeholder="Describe something about this tracker..."
+                required
+                minLength="4"
+                maxLength="50"
               />
 
               <input
@@ -136,6 +139,13 @@ export default function Tracker() {
               />
             </form>
           </div>
+        </details>
+        <details>
+          <summary> Current Issues / Bugs </summary>
+
+          <ul className="list-disc p-2 pl-4 ">
+            <li>Resume / stop counter is quite slow.</li>
+          </ul>
         </details>
         <details>
           <summary> To be implemented </summary>
@@ -176,7 +186,6 @@ export default function Tracker() {
                                   <a
                                     className="text-gray-500 px-2 hover:text-rose-400 hover:cursor-pointer"
                                     onClick={(e) => {
-                                      console.log(e.target);
                                       let confirmAgain = confirm(
                                         "Are you sure you want to delete this?"
                                       );
@@ -202,16 +211,26 @@ export default function Tracker() {
                                   ? " | Tracking..."
                                   : ""}
                                 {track.trackerId && (
-                                  <a
-                                    className="w-6 h-6 rounded-full text-center p-1 mx-2 cursor-pointer"
-                                    onClick={() => {
+                                  <button
+                                    className="w-6 h-6 rounded-full text-center p-1 mx-2 cursor-pointer disabled:opacity-50"
+                                    onClick={(e) => {
+                                      const pe = e.target.parentElement;
+                                      const el = e.target;
+                                      el.disabled = true;
+                                      pe.childNodes[2].textContent =
+                                        " | Reloading...";
+                                      console.log(e.target, pe);
                                       track.status == "start"
                                         ? handleUpdateWatcherStop(track)
                                         : handleUpdateWatcherStart(track);
+                                      setTimeout(
+                                        () => (el.disabled = false),
+                                        3000
+                                      );
                                     }}
                                   >
                                     {track.status == "start" ? "⏸" : "▶"}
-                                  </a>
+                                  </button>
                                 )}
                               </div>
                             </details>
