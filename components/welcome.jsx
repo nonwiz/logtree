@@ -77,8 +77,8 @@ export const Welcome = (data) => {
           <p className="text-rose-300 text-sm "> Loading links page! </p>
         </div>
         <div className="my-1 text-xs text-teal-500">
-          # Press [`] then type the available pages: <br /> # ["home",
-          "tracker", "links", "notes"]
+          # Press [`] then type the available pages: <br /> # [home, tracker,
+          links, notes]
         </div>
         <br />
         <div className="text-right">
