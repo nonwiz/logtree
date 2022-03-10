@@ -6,7 +6,6 @@ export default async function handler(req, res) {
   // if (req.method != "POST" || !session.user.email) {
   //   return res.status(403).json({ message: "Request forbidden" });
   // }
-  console.log("Create function trigger", req.body, req.method);
   try {
     const { category, description } = req.body;
     const tracker = await prisma.tracker.create({
@@ -27,7 +26,6 @@ export default async function handler(req, res) {
         watchers: true,
       },
     });
-    console.log("tracker creation", tracker);
     return res.status(200).json({ tracker });
   } catch (error) {
     res.status(500).json({ error });
