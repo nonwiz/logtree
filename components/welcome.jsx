@@ -20,7 +20,7 @@ export const Welcome = (data) => {
           <HL widths={[20, 20]} />
 
           <p className="mb-4">
-            A progressive platform that aim to improve the user's productivity
+            A progressive platform that aim to improve the users productivity
             and fun!
           </p>
         </div>
