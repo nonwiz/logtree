@@ -73,6 +73,8 @@ function Header() {
         commands[operation].runFx(splitMaster);
       } else if (commands[operation].fx == "runM") {
         commands[operation].runFx(splitMaster);
+        master.value = "Loading...";
+        setTimeout(() => (master.value = ""), 1000);
       }
     }
   };
@@ -94,6 +96,7 @@ function Header() {
         if (master.value.length > 2) {
           runCommand();
           console.log("run command");
+          mutate("/api/logtree");
         }
       }
     };
@@ -162,11 +165,20 @@ function Header() {
 
             {!session ? (
               <Link href="/signin">
-                <button className="text-gray-600"> Sign in </button>
+                <button
+                  className="text-gray-600"
+                  onClick={(e) => {
+                    e.target.textContent = "Logging";
+                  }}
+                >
+                  {" "}
+                  Sign in{" "}
+                </button>
               </Link>
             ) : (
               <button
-                onClick={() => {
+                onClick={(e) => {
+                  e.target.textContent = "...";
                   signOut();
                   mutate("/api/logtree");
                 }}

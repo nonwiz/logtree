@@ -1,16 +1,7 @@
-import { getProviders, signIn } from "next-auth/react";
+import { getProviders, signIn, getSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import { useCategories } from "lib/fetcher";
 
 function Signin({ providers }) {
-  const { data, isLoading } = useCategories();
-  const router = useRouter();
-
-  if (!isLoading && data && data.login) {
-    router.push("/");
-  }
-
   return (
     <div className="absolute inset-0 h-screen w-screen bg-gray-800 overflow-hidden">
       <div className="p-2 mt-[25vh] sm:mt-[18vh] flex justify-center overflow-hidden">
@@ -56,6 +47,16 @@ function Signin({ providers }) {
 export default Signin;
 
 export async function getServerSideProps(context) {
+  const { req, res } = context;
+  const session = await getSession({ req });
+  if (session && res) {
+    res.writeHead(302, {
+      Location: "/",
+    });
+    res.end();
+    return;
+  }
+
   const providers = await getProviders();
   return {
     props: { providers },
