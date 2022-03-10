@@ -89,7 +89,7 @@ export default function Tracker() {
   return (
     <div className="flex flex-col">
       <div className="w-auto sm:w-80 sm:fixed w-auto z-10 left-0 top-0 overflow-hidden my-4 sm:mt-20">
-        <div className="p-2 border border-gray-800 rounded-md">
+        <div className="sm:ml-1 p-1 border border-gray-800 rounded-md">
           <details open>
             <summary>Create Tracker </summary>
 
@@ -124,7 +124,7 @@ export default function Tracker() {
             </div>
           </details>
         </div>
-        <div className="p-2 border border-gray-800 rounded-md mt-2">
+        <div className="sm:ml-1 p-1 border border-gray-800 rounded-md mt-2">
           <details>
             <summary> Current Issues / Bugs </summary>
 

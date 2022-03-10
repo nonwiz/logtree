@@ -66,7 +66,7 @@ export default function Noter() {
   return (
     <div className="flex flex-col">
       <div className="w-auto sm:w-80 sm:fixed w-auto z-10 left-0 top-0 overflow-hidden my-4 sm:mt-20">
-        <div className="p-2 border border-gray-800 rounded-md">
+        <div className="sm:ml-1 p-1 border border-gray-800 rounded-md">
           <details open>
             <summary>Create Note</summary>
             <div className="p-1 border border-gray-600 rounded-md pt-4 m-1">

@@ -58,7 +58,7 @@ export default function Linker() {
   return (
     <div className="flex flex-col">
       <div className="w-auto sm:w-80 sm:fixed w-auto z-10 left-0 top-0 overflow-hidden my-4 sm:mt-20">
-        <div className="p-2 border border-gray-800 rounded-md">
+        <div className="sm:ml-1 p-1 border border-gray-800 rounded-md">
           <details open>
             <summary>Manage Topic</summary>
             <div className="p-1 border border-gray-600 rounded-md pt-4 m-1">
@@ -79,7 +79,7 @@ export default function Linker() {
                   required
                 />
 
-                <hr className="border-gray-800 mt-2" />
+                <hr className=" border-gray-800 mt-2" />
                 <div className="flex flex-row px-1 py-1">
                   <input
                     className="bg-gray-200 w-3/4 border border-gray-600 rounded-md p-1 mr-1"
@@ -100,7 +100,7 @@ export default function Linker() {
           </details>
         </div>
 
-        <div className="p-2 border border-gray-800 rounded-md mt-2">
+        <div className="sm:ml-1 p-1 border border-gray-800 rounded-md mt-2">
           <details>
             <summary>To be added</summary>
             <ul className="px-4 list-disc text-gray-600">

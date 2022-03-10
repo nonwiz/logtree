@@ -48,11 +48,11 @@ export default function Home() {
       {data && data.categories && (
         <div className="flex flex-col">
           <div className="w-auto sm:w-80 sm:fixed w-auto z-10 left-0 top-0 overflow-hidden my-4 sm:mt-20">
-            <div className="p-2 border border-gray-800 rounded-md">
+            <div className="sm:ml-1 p-1 border border-gray-800 rounded-md">
               {data.categories && <Category data={data.categories} />}
             </div>
 
-            <div className="border border-gray-800 mt-2 rounded-md p-2">
+            <div className="border sm:ml-1 p-1 border-gray-800 mt-2 rounded-md p-2">
               <details open>
                 <summary> Inspiration </summary>
                 <div className="p-2 bg-gray-300 text-gray-600 m-2 min-h-fit ">
