@@ -19,7 +19,7 @@ export default function Noter() {
   const [editMode, setEdit] = useState(false);
   const styles = {
     createBox:
-      "w-auto z-20 sm:w-100 sm:fixed z-10 left-0 top-0 overflow-hidden my-4 sm:mt-20 ease-in-out duration-700",
+      "w-auto z-10 hover:z-30 sm:w-100 sm:fixed left-0 top-0 overflow-hidden my-4 sm:mt-20 ease-in-out duration-700",
     listBox: "sm:ml-100 w-auto p-2 h-full ease-in-out duration-700",
   };
 

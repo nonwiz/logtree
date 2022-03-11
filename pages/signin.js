@@ -23,13 +23,14 @@ function Signin({ providers }) {
                     className="border-2 border-solid m-1 border-gray-50 w-56 hover:bg-gray-50 hover:text-gray-800 hover:border-gray-800"
                     onClick={(e) => {
                       e.target.textContent = "Processing ...";
+                      e.target.disable = true;
                       signIn(provider.id, {
                         callbackUrl: `${window.location.origin}/dashboard`,
                       });
-                      setTimeout(
-                        () => (e.target.textContent = `${provider.name}`),
-                        500
-                      );
+                      setTimeout(() => {
+                        e.target.textContent = `${provider.name}`;
+                        e.target.disable = false;
+                      }, 3000);
                     }}
                   >
                     {provider.name}
