@@ -21,4 +21,11 @@ export default NextAuth({
   pages: {
     signIn: "/signin",
   },
+  callbacks: {
+    redirect({ url, baseUrl }) {
+      if (url.startsWith(baseUrl)) return url;
+      else if (url.startsWith("/")) return new URL(url, baseUrl).toString();
+      return baseUrl;
+    },
+  },
 });

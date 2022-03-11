@@ -83,3 +83,12 @@ This project is made with:
 - 08-03-2022: updating APi to use SWR
 - 09-03-2022: added show loading / error 
 - 10-03-2022: adding mutate to category, and updating ui state adn requirement, transition, update index page
+- 11-03-2022: update looks
+-
+
+## Credits
+- [CSS GG](https://css.gg)
+- [unDraw](https://undraw.co)
+- [Quotes JSON](https://github.com/JamesFT/Database-Quotes-JSON)
+
+

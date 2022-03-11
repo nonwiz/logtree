@@ -18,12 +18,12 @@ const getLabel = (objArr, link) => {
 
 function Header() {
   const router = useRouter();
+  const [openMenu, setMenu] = useState(false);
   const [enterPress, setEnter] = useState(false);
   const { route } = router;
   const { data: session } = useSession();
   const { mutate } = useSWRConfig();
   const links = [
-    { label: "Index", link: "/" },
     { label: "Tracker", link: "/tracker" },
     { label: "Links", link: "/linker" },
     { label: "Notes", link: "/noter" },
@@ -31,17 +31,12 @@ function Header() {
     // { label: "URL Master", link: "/" },
     { label: "HF-AI", link: "/huggingface" },
   ];
-  if (!session) {
-    links.push({ label: "Login", link: "/signin" });
-  }
-
-  console.log(enterPress);
 
   const commands = {
     tracker: { fx: "open", link: "/tracker" },
     notes: { fx: "open", link: "/noter" },
     noter: { fx: "open", link: "/noter" },
-    home: { fx: "open", link: "/" },
+    home: { fx: "open", link: "/dashboard" },
     links: { fx: "open", link: "/linker" },
     linker: { fx: "open", link: "/linker" },
     index: { fx: "open", link: "/" },
@@ -59,7 +54,6 @@ function Header() {
       fx: "run",
       runFx: function (temp) {
         signOut();
-        mutate("/api/logtree");
       },
     },
   };
@@ -87,7 +81,7 @@ function Header() {
   useEffect(() => {
     // This is for dynamic mapping the document title base on the url and setting the dropdown base on label
     const label = getLabel(links, route);
-    document.title = `${label} | Logtree`;
+    document.title = `${label ? label : "Apps"} | Logtree`;
     const menu = document.querySelector("[name=menu]");
     setTimeout(() => {
       menu.value = route;
@@ -105,6 +99,7 @@ function Header() {
         }
       }
     };
+
     document.addEventListener("keyup", handleKeyUp);
     return () => {
       document.removeEventListener("keyup", handleKeyUp);
@@ -114,6 +109,7 @@ function Header() {
   return (
     <>
       <Head>
+        <title>Apps | Logtree </title>
         <meta name="title" content="Logtree | Apps" />
         <meta
           name="description"
@@ -138,11 +134,20 @@ function Header() {
                 id="menu"
                 onChange={(e) => router.push(e.target.value)}
               >
-                {links.map((item, id) => (
-                  <option value={item.link} key={id}>
-                    {item.label}
-                  </option>
-                ))}
+                {session && <option value="/dashboard">Dashboard</option>}
+                {!session && <option value="/signin">Login</option>}
+
+                {session && session.user && (
+                  <>
+                    {links.map((item, id) => (
+                      <option value={item.link} key={id}>
+                        {item.label}
+                      </option>
+                    ))}
+                  </>
+                )}
+
+                <option value="/">Index</option>
               </select>
             </span>
           </div>
@@ -163,37 +168,84 @@ function Header() {
                 ))}
               </datalist>
             </div>
-            {session?.user?.image && (
-              <img
-                src={session.user.image}
-                className="w-8 h-8 rounded-full border border-gray-400"
-                layout="fill"
-              />
-            )}
 
             {!session ? (
               <Link href="/signin">
                 <button
                   className="text-gray-600"
                   onClick={(e) => {
-                    e.target.textContent = "Logging";
+                    e.target.textContent = "...";
                   }}
                 >
-                  {" "}
-                  Sign in{" "}
+                  Sign in
                 </button>
               </Link>
             ) : (
-              <button
-                onClick={(e) => {
-                  e.target.textContent = "...";
-                  signOut();
-                  mutate("/api/logtree");
-                }}
-                className="bg-rose-500 text-red-50 hover:bg-rose-400"
-              >
-                Logout
-              </button>
+              <Link href="/dashboard">
+                <button className="text-gray-100 bg-gray-600 h-8 hover:bg-gray-700">
+                  Dashboard
+                </button>
+              </Link>
+            )}
+            {session?.user?.image && (
+              <div>
+                <div className="relative inline-block text-left">
+                  <div>
+                    <button
+                      type="button"
+                      className="  flex items-center justify-center w-full rounded-md  p-1 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-gray-500"
+                      id="options-menu"
+                      onClick={() => setMenu(!openMenu)}
+                    >
+                      <img
+                        src={session.user.image}
+                        className="w-6 h-6 rounded-full border border-gray-400"
+                        layout="fill"
+                      />
+                    </button>
+                  </div>
+                  <div
+                    className={`origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 ${
+                      openMenu ? "visible" : "invisible"
+                    }`}
+                    onMouseLeave={() =>
+                      setTimeout(() => setMenu(!openMenu), 500)
+                    }
+                  >
+                    <div
+                      className="py-1 "
+                      role="menu"
+                      aria-orientation="vertical"
+                      aria-labelledby="options-menu"
+                    >
+                      <a
+                        target="_blank"
+                        rel="noreferrer"
+                        href="https://github.com/nonwiz/logtree#credits"
+                        className="cursor-pointer block block px-4 py-2 text-md text-gray-600 hover:bg-gray-500 hover:text-gray-50 "
+                        role="menuitem"
+                      >
+                        <span className="flex flex-col">
+                          <span>Credits</span>
+                        </span>
+                      </a>
+                      <a
+                        className="cursor-pointer block block px-4 py-2 text-md text-rose-600 hover:bg-rose-500 hover:text-gray-50 "
+                        role="menuitem"
+                        onClick={(e) => {
+                          e.target.textContent = "...";
+                          signOut({ callbackUrl: `${window.location.origin}` });
+                          mutate("/api/logtree");
+                        }}
+                      >
+                        <span className="flex flex-col">
+                          <span>Logout</span>
+                        </span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         </div>

@@ -14,15 +14,22 @@ function Signin({ providers }) {
           </div>
           <div className="p-2 text-gray-50">
             <img src="/logo.png" className="w-20 rounded-md invert mx-auto" />
-            <h1 className="text-center"> Signin </h1>
+            <h1 className="text-center"> Sign in </h1>
             <hr className="my-2" />
             {Object.values(providers).map((provider) => {
               return (
                 <div key={provider.name}>
                   <button
                     className="border-2 border-solid m-1 border-gray-50 w-56 hover:bg-gray-50 hover:text-gray-800 hover:border-gray-800"
-                    onClick={() => {
-                      signIn(provider.id);
+                    onClick={(e) => {
+                      e.target.textContent = "Processing ...";
+                      signIn(provider.id, {
+                        callbackUrl: `${window.location.origin}/dashboard`,
+                      });
+                      setTimeout(
+                        () => (e.target.textContent = `${provider.name}`),
+                        500
+                      );
                     }}
                   >
                     {provider.name}
@@ -46,13 +53,12 @@ function Signin({ providers }) {
 
 export default Signin;
 
-export async function getServerSideProps(context) {
-  const { req, res } = context;
+export async function getServerSideProps({ req, res }) {
   const session = await getSession({ req });
   if (session && res) {
     return {
       redirect: {
-        destination: "/",
+        destination: "/dashboard",
         permanent: false,
       },
     };

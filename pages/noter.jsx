@@ -69,7 +69,7 @@ export default function Noter() {
         <div className="sm:ml-1 p-1 border border-gray-800 rounded-md">
           <details open>
             <summary>Create Note</summary>
-            <div className="p-1 border border-gray-600 rounded-md pt-4 m-1">
+            <div className="p-1 m-1">
               <form className="flex flex-col gap-2" onSubmit={handleCreateNote}>
                 <select name="category" required>
                   {data.categoriesList.map((item, id) => (

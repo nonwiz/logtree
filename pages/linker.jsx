@@ -61,7 +61,7 @@ export default function Linker() {
         <div className="sm:ml-1 p-1 border border-gray-800 rounded-md">
           <details open>
             <summary>Manage Topic</summary>
-            <div className="p-1 border border-gray-600 rounded-md pt-4 m-1">
+            <div className="p-1 m-1">
               <form className="flex flex-col gap-2" onSubmit={handleCreateLink}>
                 <select name="category">
                   {data &&

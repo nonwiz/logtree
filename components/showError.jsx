@@ -3,7 +3,7 @@ import Link from "next/link";
 function ShowError() {
   return (
     <div className="absolute inset-0 h-screen w-screen">
-      <div className="p-2 sm:mt-[28vh]">
+      <div className="p-2 mt-[18vh] sm:mt-[28vh]">
         <img
           src="/undraw_to_the_moon_re_q21i.svg"
           className="w-60 bg-gray-700 rounded-xl mx-auto"

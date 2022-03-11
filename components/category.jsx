@@ -38,7 +38,7 @@ export const Category = (data) => {
     <div>
       <details open>
         <summary>Manage Topic</summary>
-        <div className="px-2 py-4 border border-gray-600 rounded-md m-1">
+        <div className="p-1 m-1">
           <hr />
           {!categories.length && "Try create some topic!"}
           <div className="flex flex-wrap gap-2 m-1">

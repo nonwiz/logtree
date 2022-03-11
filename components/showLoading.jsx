@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 
 function ShowLoading() {
   const [quote, setQuote] = useState();
+  const quotesUrl =
+    "https://raw.githubusercontent.com/JamesFT/Database-Quotes-JSON/master/quotes.json";
 
   useEffect(() => {
     let quotes;

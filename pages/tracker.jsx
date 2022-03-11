@@ -101,7 +101,7 @@ export default function Tracker() {
           <details open>
             <summary>Create Tracker </summary>
 
-            <div className="border border-gray-800 m-1 p-2 rounded-md">
+            <div className="m-1 p-2">
               <form
                 className="flex flex-col gap-2"
                 onSubmit={handleCreateTracker}
