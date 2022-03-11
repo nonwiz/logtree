@@ -48,7 +48,7 @@ export default function Dashboard() {
     <div className="">
       {data && data.categories && (
         <div className="flex flex-col">
-          <div className="w-auto sm:w-80 sm:fixed w-auto z-10 left-0 top-0 overflow-hidden my-4 sm:mt-20">
+          <div className="w-auto sm:w-100 sm:fixed w-auto z-10 left-0 top-0 overflow-hidden my-4 sm:mt-20">
             <div className="sm:ml-1 p-1 border border-gray-800 rounded-md">
               {data.categories && <Category data={data.categories} />}
             </div>
@@ -67,7 +67,7 @@ export default function Dashboard() {
               </details>
             </div>
           </div>
-          <div className="sm:ml-80 w-auto p-2 h-full">
+          <div className="sm:ml-100 w-auto p-2 h-full">
             {/* This is the second column or the right column when width-sm */}
             <h2>Recent Tree </h2>
             {!data.categories.length && <p>Empty...</p>}

@@ -5,16 +5,29 @@ import { useSWRConfig } from "swr";
 import { categorizeObj } from "lib/utils";
 import ShowError from "@/components/showError";
 import ShowLoading from "@/components/showLoading";
+import "@uiw/react-md-editor/markdown-editor.css";
+import "@uiw/react-markdown-preview/markdown.css";
+import dynamic from "next/dynamic";
+
+const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
 export default function Noter() {
   const { data, isLoading, isError } = useCategories();
-  const { mutate } = useSWRConfig();
   const inputList = ["description"];
+  const { mutate } = useSWRConfig();
+  const [description, setDescription] = useState("");
   const [editMode, setEdit] = useState(false);
+  const styles = {
+    createBox:
+      "w-auto z-20 sm:w-100 sm:fixed z-10 left-0 top-0 overflow-hidden my-4 sm:mt-20 ease-in-out duration-700",
+    listBox: "sm:ml-100 w-auto p-2 h-full ease-in-out duration-700",
+  };
 
   const handleCreateNote = async (event) => {
     event.preventDefault();
-    const formData = getFieldsValues(event, [...inputList, "category"]);
+    const formData = getFieldsValues(event, ["category"]);
+    formData["description"] = description;
+    // console.log(formData);
     fetcher("/api/noter/create", formData).then((d) => {
       const tmpNotes = [...data.notes, d.note];
       mutate("/api/logtree", { ...data, notes: tmpNotes }, false);
@@ -65,10 +78,48 @@ export default function Noter() {
 
   return (
     <div className="flex flex-col">
-      <div className="w-auto sm:w-80 sm:fixed w-auto z-10 left-0 top-0 overflow-hidden my-4 sm:mt-20">
+      <div id="create-note" className={styles.createBox}>
         <div className="sm:ml-1 p-1 border border-gray-800 rounded-md">
           <details open>
             <summary>Create Note</summary>
+            <div className="text-right -mt-8">
+              <button
+                className="bg-gray-300 text-gray-800 hover:text-gray-300 hover:bg-gray-800"
+                onClick={(e) => {
+                  const createBox = document.querySelector("#create-note");
+                  const listBox = document.querySelector("#list-note");
+                  setTimeout(() => {
+                    if (createBox.className != styles.createBox) {
+                      createBox.className = styles.createBox;
+                      listBox.className = styles.listBox;
+                    } else {
+                      createBox.classList.remove(
+                        "sm:fixed",
+                        "sm:w-100",
+                        "sm:mt-20"
+                      );
+                      listBox.classList.remove("sm:ml-100");
+                    }
+                  }, 300);
+                }}
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M9 9H3V7H7V3H9V9Z" fill="currentColor" />
+                  <path d="M9 15H3V17H7V21H9V15Z" fill="currentColor" />
+                  <path d="M21 15H15V21H17V17H21V15Z" fill="currentColor" />
+                  <path
+                    d="M15 9.00012H21V7.00012H17V3.00012H15V9.00012Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </button>
+            </div>
             <div className="p-1 m-1">
               <form className="flex flex-col gap-2" onSubmit={handleCreateNote}>
                 <select name="category" required>
@@ -78,16 +129,29 @@ export default function Noter() {
                     </option>
                   ))}
                 </select>
-                <textarea
-                  name="description"
+                <MDEditor
+                  value={description}
+                  onChange={setDescription}
+                  textareaProps={{
+                    name: "description",
+                    placeholder: "You can write your markdown here",
+                    minLength: "5",
+                  }}
                   placeholder="Write down your note here..."
-                  rows="5"
-                  required
-                  minLength="5"
                 />
 
                 <hr className="border-gray-800 mt-2" />
-                <button className="w-full bg-gray-800 text-gray-100 hover:bg-gray-700">
+                <button
+                  className="w-full bg-gray-800 text-gray-100 hover:bg-gray-700"
+                  onClick={(e) => {
+                    e.target.textContent = "Pinning...";
+                    e.target.disabled = true;
+                    setTimeout(() => {
+                      e.target.textContent = "Pin Note";
+                      e.target.disabled = false;
+                    }, 2000);
+                  }}
+                >
                   Pin Note
                 </button>
               </form>
@@ -95,7 +159,7 @@ export default function Noter() {
           </details>
         </div>
       </div>
-      <div className="sm:ml-80 w-auto p-2 h-full">
+      <div id="list-note" className={styles.listBox}>
         <div className="flex flex-row justify-between">
           <h2>View List of Note </h2>
           <a
