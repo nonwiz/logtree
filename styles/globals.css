@@ -134,3 +134,10 @@ details {
  bottom: 5px
 } 
 
+.w-md-editor .w-md-editor-content {
+  @apply bg-gray-100;
+}
+
+.w-md-editor .w-md-editor-toolbar  {
+  @apply bg-gray-300;
+}

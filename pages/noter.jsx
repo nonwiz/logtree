@@ -129,16 +129,18 @@ export default function Noter() {
                     </option>
                   ))}
                 </select>
-                <MDEditor
-                  value={description}
-                  onChange={setDescription}
-                  textareaProps={{
-                    name: "description",
-                    placeholder: "You can write your markdown here",
-                    minLength: "5",
-                  }}
-                  placeholder="Write down your note here..."
-                />
+                <div>
+                  <MDEditor
+                    value={description}
+                    onChange={setDescription}
+                    textareaProps={{
+                      name: "description",
+                      placeholder: "You can write your markdown here",
+                      minLength: "5",
+                    }}
+                    placeholder="Write down your note here..."
+                  />
+                </div>
 
                 <hr className="border-gray-800 mt-2" />
                 <button
