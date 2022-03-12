@@ -24,7 +24,7 @@ export const Welcome = (data) => {
             and fun!
           </p>
         </div>
-        <div className=" w-full flex flex-col md:flex-row gap-2 justify-between">
+        <div className=" w-full flex flex-col md:flex-row gap-2 justify-start">
           <details className="md:w-80 p-2 border-2 border-gray-800" open>
             <summary> Time Tracking </summary>
             <p>
